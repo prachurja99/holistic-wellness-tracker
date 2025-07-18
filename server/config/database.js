@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 // Database connection function
 const connectDB = async () => {
   try {
-    // MongoDB connection string
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/wellness-tracker';
+    // MongoDB connection string (from .env or default local)
+    const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/wellness-tracker';
     
     // Connect to MongoDB
     const conn = await mongoose.connect(mongoURI, {

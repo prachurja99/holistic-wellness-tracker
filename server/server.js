@@ -23,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/journal', require('./routes/journalRoutes')); // fixed import here
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -61,3 +62,5 @@ app.listen(PORT, () => {
 🌐 Client URL: ${process.env.CLIENT_URL || 'http://localhost:3000'}
   `);
 });
+
+
