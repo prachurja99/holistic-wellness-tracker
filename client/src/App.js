@@ -1,52 +1,39 @@
+// src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import AuthPage from './pages/AuthPage';
+import RegisterLogin from './pages/RegisterLogin';  // Combined Register & Login page
 import Dashboard from './pages/Dashboard';
-import Home from './pages/Home';
 import MoodTracker from './pages/MoodTracker';
-import Journal from './pages/Journal';
 import HabitTracker from './pages/HabitTracker';
+import Journal from './pages/Journal';
 import NotFound from './pages/NotFound';
+
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Landing page with login & register */}
-        <Route path="/" element={<AuthPage />} />
+        {/* Auth combined page */}
+        <Route path="/" element={<RegisterLogin />} />
+        <Route path="/login" element={<RegisterLogin />} />
+        <Route path="/register" element={<RegisterLogin />} />
 
         {/* Protected routes */}
-        <Route
-          path="/dashboard"
+        <Route 
+          path="/dashboard" 
           element={
             <PrivateRoute>
               <Dashboard />
             </PrivateRoute>
-          }
-        />
-        <Route
-          path="/home"
-          element={
-            <PrivateRoute>
-              <Home />
-            </PrivateRoute>
-          }
+          } 
         />
         <Route
           path="/mood-tracker"
           element={
             <PrivateRoute>
               <MoodTracker />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/journal"
-          element={
-            <PrivateRoute>
-              <Journal />
             </PrivateRoute>
           }
         />
@@ -58,7 +45,16 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route
+          path="/journal"
+          element={
+            <PrivateRoute>
+              <Journal />
+            </PrivateRoute>
+          }
+        />
 
+        {/* 404 Page */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
@@ -66,6 +62,10 @@ function App() {
 }
 
 export default App;
+
+
+
+
 
 
 

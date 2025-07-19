@@ -1,30 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from 'react';
+import MoodEntryForm from '../components/MoodEntryForm';
+import MoodHistory from '../components/MoodHistory';
 
-function MoodTracker() {
-  const [mood, setMood] = useState("");
+const MoodTracker = () => {
+  const [moodEntries, setMoodEntries] = useState([]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Your mood today: ${mood}`);
-    // TODO: Send to backend
+  // Load from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem('moodEntries');
+    if (stored) setMoodEntries(JSON.parse(stored));
+  }, []);
+
+  // Save to localStorage when moodEntries changes
+  useEffect(() => {
+    localStorage.setItem('moodEntries', JSON.stringify(moodEntries));
+  }, [moodEntries]);
+
+  const handleAddMood = (entry) => {
+    setMoodEntries([entry, ...moodEntries]);
+  };
+
+  const handleDeleteMood = (id) => {
+    const updated = moodEntries.filter((entry) => entry.id !== id);
+    setMoodEntries(updated);
   };
 
   return (
-    <div>
+    <div style={{ padding: '1rem' }}>
       <h2>Mood Tracker</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Select your mood:</label><br />
-        <select value={mood} onChange={(e) => setMood(e.target.value)}>
-          <option value="">--Choose--</option>
-          <option value="Happy">Happy</option>
-          <option value="Sad">Sad</option>
-          <option value="Anxious">Anxious</option>
-          <option value="Calm">Calm</option>
-        </select><br /><br />
-        <button type="submit">Save Mood</button>
-      </form>
+      <MoodEntryForm onAddMood={handleAddMood} />
+      <MoodHistory moodEntries={moodEntries} onDelete={handleDeleteMood} />
     </div>
   );
-}
+};
 
 export default MoodTracker;
+
