@@ -1,47 +1,55 @@
-// src/pages/MoodTracker.js
+// client/src/pages/MoodTracker.js
 import React, { useEffect, useState } from 'react';
 import MoodEntryForm from '../components/MoodEntryForm';
 import MoodHistory from '../components/MoodHistory';
-import MoodTrendsChart from '../components/MoodTrendsChart'; // Import the chart component
+import MoodTrendsChart from '../components/MoodTrendsChart';
 
 const MoodTracker = () => {
   const [moodEntries, setMoodEntries] = useState([]);
 
-  // Load saved moods from localStorage on mount
+  // load local entries immediately for offline users
   useEffect(() => {
     const stored = localStorage.getItem('moodEntries');
     if (stored) setMoodEntries(JSON.parse(stored));
   }, []);
 
-  // Save moods to localStorage whenever moodEntries changes
+  // Keep localStorage up-to-date for offline fallback
   useEffect(() => {
     localStorage.setItem('moodEntries', JSON.stringify(moodEntries));
   }, [moodEntries]);
 
-  // Add a new mood entry
+  // Add mood (called by MoodEntryForm)
   const handleAddMood = (entry) => {
-    setMoodEntries([entry, ...moodEntries]);
+    // If backend returned saved doc (it will have _id), ensure consistent shape
+    const normalized = {
+      id: entry.id || entry._id || Date.now(),
+      _id: entry._id,
+      moodValue: entry.moodValue,
+      moodEmoji: entry.moodEmoji,
+      note: entry.note,
+      timestamp: entry.timestamp || entry.date || new Date().toISOString()
+    };
+    setMoodEntries((prev) => [normalized, ...prev]);
   };
 
-  // Delete a mood entry by id
-  const handleDeleteMood = (id) => {
-    const updated = moodEntries.filter((entry) => entry.id !== id);
-    setMoodEntries(updated);
+  // Delete local fallback (for entries saved locally)
+  const handleLocalDelete = (id) => {
+    setMoodEntries((prev) => prev.filter((m) => (m._id || m.id) !== id));
   };
 
   return (
     <div style={{ padding: '1rem' }}>
       <h2>Mood Tracker</h2>
       <MoodEntryForm onAddMood={handleAddMood} />
-      <MoodHistory moodEntries={moodEntries} onDelete={handleDeleteMood} />
+      <MoodHistory moodEntries={moodEntries} onDelete={handleLocalDelete} />
       <h3>Mood Trends</h3>
-      {/* ✅ Use key to trigger full chart refresh if needed */}
-      <MoodTrendsChart key={moodEntries.length} moodEntries={moodEntries} />
+      <MoodTrendsChart moodEntries={moodEntries} />
     </div>
   );
 };
 
 export default MoodTracker;
+
 
 
 

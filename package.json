@@ -4,11 +4,11 @@
   "description": "A full-stack wellness application for habit tracking, mood monitoring, and journaling built with MERN stack following MVC architecture",
   "main": "server/server.js",
   "scripts": {
-    "start": "node server/server.js",
-    "dev": "npm-run-all --parallel server client",
-    "server": "npm --prefix server run dev",
-    "client": "npm --prefix client start",
-    "install-server": "cd server && npm install",
+    "start": "node server/server.js",                     
+    "dev": "npm-run-all --parallel server client",        
+    "server": "npm --prefix server run dev",              
+    "client": "npm --prefix client start",                
+    "install-server": "cd server && npm install",         
     "install-client": "cd client && npm install",
     "install-all": "npm run install-server && npm run install-client"
   },
@@ -30,3 +30,4 @@
     "recharts": "^3.1.0"
   }
 }
+

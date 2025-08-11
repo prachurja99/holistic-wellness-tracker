@@ -1,9 +1,10 @@
+// server/server.js
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/database');
 
-// Load environment variables from .env file
+// Load environment variables
 dotenv.config();
 
 // Connect to MongoDB
@@ -23,7 +24,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/journal', require('./routes/journalRoutes')); // fixed import here
+app.use('/api/journal', require('./routes/journalRoutes'));
+app.use('/api/moods', require('./routes/moodRoutes'));
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -34,7 +36,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// 404 handler for undefined routes
+// 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
@@ -42,7 +44,7 @@ app.use('*', (req, res) => {
   });
 });
 
-// Error handler middleware
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
@@ -62,5 +64,6 @@ app.listen(PORT, () => {
 🌐 Client URL: ${process.env.CLIENT_URL || 'http://localhost:3000'}
   `);
 });
+
 
 

@@ -1,32 +1,57 @@
 // src/api/auth.js
+import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/auth';
+const api = axios.create({
+  baseURL: '/api/auth' // Dev proxy will route to backend
+});
 
+const authHeaders = (token) =>
+  token ? { Authorization: `Bearer ${token}` } : {};
+
+// REGISTER
 export const registerUser = async (userData) => {
-  const res = await fetch(`${API_URL}/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData),
-  });
-  return res.json();
+  try {
+    const res = await api.post('/register', userData);
+    return res.data;
+  } catch (err) {
+    console.error('Register API error', err?.response?.data || err.message);
+    return { success: false, message: err?.response?.data?.message || err.message };
+  }
 };
 
+// LOGIN
 export const loginUser = async (userData) => {
-  const res = await fetch(`${API_URL}/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData),
-  });
-  return res.json();
+  try {
+    const res = await api.post('/login', userData);
+    return res.data;
+  } catch (err) {
+    console.error('Login API error', err?.response?.data || err.message);
+    return { success: false, message: err?.response?.data?.message || err.message };
+  }
 };
 
+// GET PROFILE
 export const getUserProfile = async (token) => {
-  const res = await fetch(`${API_URL}/profile`, {
-    method: 'GET',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-  });
-  return res.json();
+  try {
+    const res = await api.get('/profile', { headers: authHeaders(token) });
+    return res.data;
+  } catch (err) {
+    console.error('Profile API error', err?.response?.data || err.message);
+    return { success: false, message: err?.response?.data?.message || err.message };
+  }
 };
+
+// UPDATE PROFILE
+export const updateUserProfile = async (token, updatedData) => {
+  try {
+    const res = await api.put('/profile', updatedData, { headers: authHeaders(token) });
+    return res.data;
+  } catch (err) {
+    console.error('Update Profile API error', err?.response?.data || err.message);
+    return { success: false, message: err?.response?.data?.message || err.message };
+  }
+};
+
+
+
+

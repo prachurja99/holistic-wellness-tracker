@@ -1,9 +1,12 @@
+// src/pages/Register.js
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../api/auth';
 
-export default function Register({ onSuccess }) {
+export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -13,11 +16,11 @@ export default function Register({ onSuccess }) {
     e.preventDefault();
     const data = await registerUser(form);
 
-    if (data.success) {
+    if (data?.success || data?.user || data?._id) {
       setMessage('Registration successful! You can now login.');
-      if (onSuccess) onSuccess(); // Switch to login form
+      navigate('/login');
     } else {
-      setMessage(data.message || 'Registration failed');
+      setMessage(data?.message || 'Registration failed');
     }
   };
 
@@ -25,15 +28,40 @@ export default function Register({ onSuccess }) {
     <div>
       <h2>Register</h2>
       <form onSubmit={handleSubmit}>
-        <input name="name" placeholder="Name" onChange={handleChange} required />
-        <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
+        <input 
+          name="name" 
+          placeholder="Name"
+          value={form.name} 
+          onChange={handleChange} 
+          required 
+        />
+        <input 
+          name="email" 
+          type="email" 
+          placeholder="Email"
+          value={form.email} 
+          onChange={handleChange} 
+          required 
+        />
+        <input 
+          name="password" 
+          type="password" 
+          placeholder="Password"
+          value={form.password} 
+          onChange={handleChange} 
+          required 
+        />
         <button type="submit">Register</button>
       </form>
       {message && <p>{message}</p>}
+
+      <p>
+        Already have an account? <Link to="/login">Login here</Link>
+      </p>
     </div>
   );
 }
+
 
 
 
