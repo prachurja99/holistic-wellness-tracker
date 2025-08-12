@@ -1,41 +1,35 @@
 // src/pages/Dashboard.js
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
-
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Welcome to your Dashboard</h2>
-      <p>You are logged in.</p>
+    <div className="container">
+      <h2>Dashboard</h2>
 
-      <div style={{ marginBottom: '1rem' }}>
-        <button onClick={() => navigate('/home')} style={{ marginRight: '1rem' }}>
-          Home
-        </button>
-        <button onClick={() => navigate('/mood-tracker')} style={{ marginRight: '1rem' }}>
-          Mood Tracker
-        </button>
-        <button onClick={() => navigate('/journal')} style={{ marginRight: '1rem' }}>
-          Journal
-        </button>
-        <button onClick={() => navigate('/habit-tracker')} style={{ marginRight: '1rem' }}>
-          Habit Tracker
-        </button>
+      <div className="card">
+        <h3>Overview</h3>
+        <p>Welcome back! Here is a quick summary of your wellness data.</p>
+        {/* You can add charts or summaries here */}
       </div>
 
-      <button onClick={handleLogout} style={{ backgroundColor: 'red', color: 'white' }}>
-        Logout
-      </button>
+      <div className="card">
+        <h3>Recent Habits</h3>
+        {/* Insert habit summary component or list */}
+      </div>
+
+      <div className="card">
+        <h3>Recent Mood Logs</h3>
+        {/* Insert mood summary component or list */}
+      </div>
+
+      <div className="card">
+        <h3>Recent Journal Entries</h3>
+        {/* Insert journal entry previews */}
+      </div>
     </div>
   );
 };
 
 export default Dashboard;
+
 

@@ -1,119 +1,112 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// src/pages/Journal.js
+import React, { useEffect, useState } from 'react';
+import { fetchJournals, addJournal, updateJournal, deleteJournal } from '../api/journal';
 import JournalEntryForm from '../components/JournalEntryForm';
 import JournalEntriesList from '../components/JournalEntriesList';
 
 const Journal = () => {
   const [entries, setEntries] = useState([]);
-  const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
-
-  // Get token from localStorage
+  const [loading, setLoading] = useState(false);
   const token = localStorage.getItem('token');
 
-  // Fetch entries from backend on mount
+  // Load entries from backend or localStorage
   useEffect(() => {
-    const fetchEntries = async () => {
-      try {
-        const res = await axios.get('http://localhost:5000/api/journal', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        setEntries(res.data.entries || []);
-      } catch (error) {
-        console.error('Error fetching journal entries:', error);
-      } finally {
+    const loadData = async () => {
+      if (token) {
+        setLoading(true);
+        const res = await fetchJournals(token);
         setLoading(false);
+        if (res.success) {
+          setEntries(res.journals);
+          localStorage.setItem('journalEntries', JSON.stringify(res.journals));
+        } else {
+          console.warn('Backend fetch failed, using localStorage fallback');
+          const stored = localStorage.getItem('journalEntries');
+          if (stored) setEntries(JSON.parse(stored));
+        }
+      } else {
+        const stored = localStorage.getItem('journalEntries');
+        if (stored) setEntries(JSON.parse(stored));
       }
     };
-
-    if (token) {
-      fetchEntries();
-    } else {
-      setLoading(false);
-    }
+    loadData();
   }, [token]);
 
-  // Add entry (POST request)
-  const addEntry = async (entry) => {
-    try {
-      const res = await axios.post(
-        'http://localhost:5000/api/journal',
-        entry,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      setEntries([res.data.entry, ...entries]);
-    } catch (error) {
-      console.error('Error adding entry:', error);
-    }
-  };
+  // Keep local storage updated
+  useEffect(() => {
+    localStorage.setItem('journalEntries', JSON.stringify(entries));
+  }, [entries]);
 
-  // Update entry (PUT request)
-const editEntry = async (id, updatedEntry) => {
-  try {
-    const res = await axios.put(
-      `http://localhost:5000/api/journal/${id}`,
-      updatedEntry,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+  // Add new entry
+  const handleAddEntry = async (newEntry) => {
+    const entryWithDate = { ...newEntry, date: new Date().toISOString() };
+    if (token) {
+      const res = await addJournal(entryWithDate, token);
+      if (res.success) {
+        setEntries((prev) => [res.journal, ...prev]);
       }
-    );
-    // Update entries state without reload
-    setEntries(entries.map(e => (e._id === id ? res.data.entry : e)));
-  } catch (error) {
-    console.error('Error updating entry:', error);
-  }
-};
-
-
-  // Delete entry (DELETE request)
-  const deleteEntry = async (id) => {
-    try {
-      await axios.delete(`http://localhost:5000/api/journal/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setEntries(entries.filter(e => e._id !== id));
-    } catch (error) {
-      console.error('Error deleting entry:', error);
+    } else {
+      const localEntry = { id: Date.now(), ...entryWithDate };
+      setEntries((prev) => [localEntry, ...prev]);
     }
   };
 
-  // Filter entries by search term
-  const filteredEntries = entries.filter(entry =>
-    entry.title?.toLowerCase().includes(search.toLowerCase()) ||
-    entry.content?.toLowerCase().includes(search.toLowerCase()) ||
-    (entry.tag && entry.tag.toLowerCase().includes(search.toLowerCase()))
-  );
+  // Delete entry
+  const handleDeleteEntry = async (id) => {
+    if (token) {
+      const res = await deleteJournal(id, token);
+      if (res.success) {
+        setEntries((prev) => prev.filter((entry) => (entry._id || entry.id) !== id));
+      }
+    } else {
+      setEntries((prev) => prev.filter((entry) => (entry.id) !== id));
+    }
+  };
 
-  if (loading) {
-    return <p>Loading your journal entries...</p>;
-  }
+  // Edit entry
+  const handleEditEntry = async (id, updatedData) => {
+    const updatedEntry = { ...updatedData, date: new Date().toISOString() };
+    if (token) {
+      const res = await updateJournal(id, updatedEntry, token);
+      if (res.success) {
+        setEntries((prev) =>
+          prev.map((entry) =>
+            (entry._id || entry.id) === id ? res.journal : entry
+          )
+        );
+      }
+    } else {
+      setEntries((prev) =>
+        prev.map((entry) =>
+          (entry._id || entry.id) === id ? { ...entry, ...updatedEntry } : entry
+        )
+      );
+    }
+  };
 
   return (
-    <div style={{ padding: '1rem' }}>
+    <div className="container">
       <h2>Journal</h2>
-      <input
-        type="text"
-        placeholder="Search entries..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem' }}
-      />
-      <JournalEntryForm onAddEntry={addEntry} />
-      <JournalEntriesList entries={filteredEntries} onDelete={deleteEntry} />
+      
+      {/* Form to add new entry */}
+      <div className="card">
+        <JournalEntryForm onAddEntry={handleAddEntry} />
+      </div>
+
+      {loading ? (
+        <p>Loading journal entries...</p>
+      ) : (
+        <JournalEntriesList
+          entries={entries}
+          onDelete={handleDeleteEntry}
+          onEdit={handleEditEntry}
+        />
+      )}
     </div>
   );
 };
 
 export default Journal;
+
+
+

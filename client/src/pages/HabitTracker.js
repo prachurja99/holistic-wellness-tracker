@@ -1,71 +1,109 @@
-// src/pages/HabitTracker.js
 import React, { useEffect, useState } from 'react';
 import HabitForm from '../components/HabitForm';
 import HabitList from '../components/HabitList';
+import { fetchHabits, addHabit, deleteHabit, toggleCompletion } from '../api/habits';
 
 const HabitTracker = () => {
   const [habits, setHabits] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const token = localStorage.getItem('token');
 
-  // Load habits from localStorage on mount
+  // Load from backend OR localStorage
   useEffect(() => {
-    const stored = localStorage.getItem('habits');
-    if (stored) setHabits(JSON.parse(stored));
-  }, []);
+    const loadHabits = async () => {
+      if (token) {
+        setLoading(true);
+        const res = await fetchHabits(token);
+        setLoading(false);
+        if (res.success) {
+          setHabits(res.habits);
+          localStorage.setItem('habits', JSON.stringify(res.habits));
+        } else {
+          console.warn('Habit fetch failed, using local cache');
+          const stored = localStorage.getItem('habits');
+          if (stored) setHabits(JSON.parse(stored));
+        }
+      } else {
+        const stored = localStorage.getItem('habits');
+        if (stored) setHabits(JSON.parse(stored));
+      }
+    };
+    loadHabits();
+  }, [token]);
 
-  // Save habits to localStorage when they change
+  // Keep local cache in sync
   useEffect(() => {
     localStorage.setItem('habits', JSON.stringify(habits));
   }, [habits]);
 
-  const handleAddHabit = (habit) => {
-    const newHabit = { ...habit, completion: habit.completion || [] };
-    setHabits([newHabit, ...habits]);
+  const handleAddHabit = async (habit) => {
+    if (token) {
+      const res = await addHabit(habit, token);
+      if (res.success) setHabits((prev) => [res.habit, ...prev]);
+    } else {
+      // offline fallback
+      const localHabit = { id: Date.now(), ...habit };
+      setHabits((prev) => [localHabit, ...prev]);
+    }
   };
 
-  const handleDeleteHabit = (id) => {
-    setHabits(habits.filter((h) => h.id !== id));
+  const handleDeleteHabit = async (id) => {
+    if (token) {
+      const res = await deleteHabit(id, token);
+      if (res.success) setHabits((prev) => prev.filter((h) => h._id !== id && h.id !== id));
+    } else {
+      setHabits((prev) => prev.filter((h) => h.id !== id));
+    }
   };
 
-  const handleToggleComplete = (id, dateStr) => {
-    setHabits((prevHabits) =>
-      prevHabits.map((habit) => {
-        if (habit.id === id) {
-          const completion = habit.completion || [];
-          const normalizedDate = new Date(dateStr).toISOString().split('T')[0];
-
-          if (completion.includes(normalizedDate)) {
-            // Remove the date (unmark)
-            return {
-              ...habit,
-              completion: completion.filter((d) => d !== normalizedDate),
-            };
-          } else {
-            // Add the date (mark)
-            return {
-              ...habit,
-              completion: [...completion, normalizedDate],
-            };
+  const handleToggleComplete = async (id, date) => {
+    if (token) {
+      const res = await toggleCompletion(id, date, token);
+      if (res.success) {
+        setHabits((prev) => prev.map((h) => (h._id === id ? res.habit : h)));
+      }
+    } else {
+      setHabits((prev) =>
+        prev.map((habit) => {
+          if (habit.id === id) {
+            const completion = habit.completion || [];
+            if (completion.includes(date)) {
+              return { ...habit, completion: completion.filter((d) => d !== date) };
+            } else {
+              return { ...habit, completion: [...completion, date] };
+            }
           }
-        }
-        return habit;
-      })
-    );
+          return habit;
+        })
+      );
+    }
   };
 
   return (
-    <div style={{ padding: '1rem' }}>
+    <div className="container">
       <h2>Habit Tracker</h2>
-      <HabitForm onAddHabit={handleAddHabit} />
-      <HabitList
-        habits={habits}
-        onDelete={handleDeleteHabit}
-        onToggleComplete={handleToggleComplete}
-      />
+      <div className="card">
+        <HabitForm onAddHabit={handleAddHabit} />
+      </div>
+      {loading ? (
+        <p>Loading habits...</p>
+      ) : (
+        <div className="card">
+          <HabitList
+            habits={habits}
+            onDelete={handleDeleteHabit}
+            onToggleComplete={handleToggleComplete}
+          />
+        </div>
+      )}
     </div>
   );
 };
 
 export default HabitTracker;
+
+
+
 
 
 

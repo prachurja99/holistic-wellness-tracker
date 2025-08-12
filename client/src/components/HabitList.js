@@ -13,19 +13,7 @@ const HabitList = ({ habits, onDelete, onToggleComplete }) => {
   };
 
   const handleToggleDay = (habitId, dateString) => {
-    const habit = habits.find((h) => h.id === habitId);
-    if (!habit) return;
-
-    const isCompleted = habit.completion?.includes(dateString);
-    let updatedCompletion;
-
-    if (isCompleted) {
-      updatedCompletion = habit.completion.filter((d) => d !== dateString);
-    } else {
-      updatedCompletion = [...(habit.completion || []), dateString];
-    }
-
-    onToggleComplete(habitId, updatedCompletion);
+    onToggleComplete(habitId, dateString);
   };
 
   return (
@@ -33,9 +21,9 @@ const HabitList = ({ habits, onDelete, onToggleComplete }) => {
       {habits.length === 0 ? (
         <p>No habits added yet.</p>
       ) : (
-        habits.map(({ id, title, category, frequency, completion }) => (
+        habits.map(({ _id, title, category, frequency, completion }) => (
           <div
-            key={id}
+            key={_id}
             style={{
               border: '1px solid #ccc',
               borderRadius: '5px',
@@ -50,7 +38,7 @@ const HabitList = ({ habits, onDelete, onToggleComplete }) => {
               </div>
               <div>
                 <button
-                  onClick={() => onDelete(id)}
+                  onClick={() => onDelete(_id)}
                   style={{
                     backgroundColor: '#ff4d4d',
                     border: 'none',
@@ -66,7 +54,7 @@ const HabitList = ({ habits, onDelete, onToggleComplete }) => {
                 </button>
 
                 <button
-                  onClick={() => toggleCalendar(id)}
+                  onClick={() => toggleCalendar(_id)}
                   style={{
                     backgroundColor: '#2196f3',
                     border: 'none',
@@ -77,15 +65,16 @@ const HabitList = ({ habits, onDelete, onToggleComplete }) => {
                   }}
                   aria-label={`Toggle calendar for habit ${title}`}
                 >
-                  {calendarVisibleFor === id ? 'Hide Calendar' : 'View Calendar'}
+                  {calendarVisibleFor === _id ? 'Hide Calendar' : 'View Calendar'}
                 </button>
               </div>
             </div>
 
-            {calendarVisibleFor === id && (
+            {calendarVisibleFor === _id && (
               <HabitCalendar
                 completion={completion || []}
-                onToggleDay={(date) => handleToggleDay(id, date)}
+                category={category}
+                onDateToggle={(date) => handleToggleDay(_id, date)}
               />
             )}
           </div>

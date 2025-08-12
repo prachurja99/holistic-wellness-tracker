@@ -3,6 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/database');
+const goalRoutes = require('./routes/goalRoutes');
+
+
 
 // Load environment variables
 dotenv.config();
@@ -26,6 +29,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/journal', require('./routes/journalRoutes'));
 app.use('/api/moods', require('./routes/moodRoutes'));
+app.use('/api/habits', require('./routes/habitRoutes'));
+app.use('/api/goals', goalRoutes);
+
+
+
 
 // Health check route
 app.get('/api/health', (req, res) => {

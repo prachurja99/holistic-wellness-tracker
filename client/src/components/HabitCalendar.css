@@ -1,7 +1,52 @@
-/* src/components/HabitCalendar.css */
+/* Base completed date style */
 .completed-date {
-  background-color: #4caf50 !important;
-  color: white !important;
   border-radius: 50%;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
+
+/* Category colors with best contrast */
+.completed-date.health-habit {
+  background-color: #4caf50 !important; /* green */
+  color: #fff !important; /* white text for dark bg */
+}
+
+.completed-date.fitness-habit {
+  background-color: #2196f3 !important; /* blue */
+  color: #fff !important; /* white text for dark bg */
+}
+
+.completed-date.learning-habit {
+  background-color: #ff9800 !important; /* orange */
+  color: #222 !important; /* dark text for light bg */
+}
+
+.completed-date.wellness-habit {
+  background-color: #9c27b0 !important; /* purple */
+  color: #fff !important; /* white text for dark bg */
+}
+
+.completed-date.productivity-habit {
+  background-color: #607d8b !important; /* grey-blue */
+  color: #fff !important; /* white text for dark bg */
+}
+
+.completed-date.other-habit {
+  background-color: #795548 !important; /* brown */
+  color: #fff !important; /* white text for dark bg */
+}
+
+.completed-date.default-habit {
+  background-color: #333 !important; /* fallback dark */
+  color: #fff !important;
+}
+
+/* Hover effect */
+.completed-date:hover {
+  transform: scale(1.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 0 12px rgba(0,0,0,0.3);
+}
+
+
 

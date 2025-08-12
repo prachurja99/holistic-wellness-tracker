@@ -1,54 +1,98 @@
-// client/src/pages/MoodTracker.js
+// src/pages/MoodTracker.js
 import React, { useEffect, useState } from 'react';
 import MoodEntryForm from '../components/MoodEntryForm';
 import MoodHistory from '../components/MoodHistory';
 import MoodTrendsChart from '../components/MoodTrendsChart';
+import { fetchMoods, createMood, deleteMoodApi } from '../api/moods';
 
 const MoodTracker = () => {
   const [moodEntries, setMoodEntries] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const token = localStorage.getItem('token');
 
-  // load local entries immediately for offline users
+  // Load moods from backend OR localStorage
   useEffect(() => {
-    const stored = localStorage.getItem('moodEntries');
-    if (stored) setMoodEntries(JSON.parse(stored));
-  }, []);
+    const loadData = async () => {
+      if (token) {
+        setLoading(true);
+        const res = await fetchMoods(token);
+        setLoading(false);
 
-  // Keep localStorage up-to-date for offline fallback
+        if (res.success) {
+          setMoodEntries(res.moods);
+          localStorage.setItem('moodEntries', JSON.stringify(res.moods));
+        } else {
+          console.warn('Backend fetch failed:', res.message, 'Using localStorage fallback');
+          const stored = localStorage.getItem('moodEntries');
+          if (stored) setMoodEntries(JSON.parse(stored));
+        }
+      } else {
+        const stored = localStorage.getItem('moodEntries');
+        if (stored) setMoodEntries(JSON.parse(stored));
+      }
+    };
+    loadData();
+  }, [token]);
+
+  // Keep localStorage up-to-date
   useEffect(() => {
     localStorage.setItem('moodEntries', JSON.stringify(moodEntries));
   }, [moodEntries]);
 
-  // Add mood (called by MoodEntryForm)
-  const handleAddMood = (entry) => {
-    // If backend returned saved doc (it will have _id), ensure consistent shape
-    const normalized = {
-      id: entry.id || entry._id || Date.now(),
-      _id: entry._id,
-      moodValue: entry.moodValue,
-      moodEmoji: entry.moodEmoji,
-      note: entry.note,
-      timestamp: entry.timestamp || entry.date || new Date().toISOString()
-    };
-    setMoodEntries((prev) => [normalized, ...prev]);
+  // Add mood entry
+  const handleAddMood = async (entry) => {
+    if (token) {
+      const res = await createMood(entry, token);
+      if (res.success) {
+        setMoodEntries(prev => [res.mood, ...prev]);
+        return;
+      }
+      console.warn('Could not save mood to backend:', res.message);
+    }
+    // Offline fallback
+    const localEntry = { id: Date.now(), ...entry };
+    setMoodEntries(prev => [localEntry, ...prev]);
   };
 
-  // Delete local fallback (for entries saved locally)
-  const handleLocalDelete = (id) => {
-    setMoodEntries((prev) => prev.filter((m) => (m._id || m.id) !== id));
+  // Delete mood
+  const handleDeleteMood = async (id) => {
+    if (token) {
+      const res = await deleteMoodApi(id, token);
+      if (!res.success) {
+        console.warn('Could not delete mood from backend:', res.message);
+      }
+    }
+    setMoodEntries(prev => prev.filter(mood => mood._id !== id && mood.id !== id));
   };
 
   return (
-    <div style={{ padding: '1rem' }}>
+    <div className="container">
       <h2>Mood Tracker</h2>
-      <MoodEntryForm onAddMood={handleAddMood} />
-      <MoodHistory moodEntries={moodEntries} onDelete={handleLocalDelete} />
-      <h3>Mood Trends</h3>
-      <MoodTrendsChart moodEntries={moodEntries} />
+      <div className="card">
+        <MoodEntryForm onAddMood={handleAddMood} />
+      </div>
+
+      {loading ? (
+        <p>Loading moods...</p>
+      ) : (
+        <>
+          <div className="card">
+            <MoodHistory moodEntries={moodEntries} onDelete={handleDeleteMood} />
+          </div>
+          <div className="card">
+            <h3 style={{ marginTop: 0 }}>Mood Trends</h3>
+            <MoodTrendsChart moodEntries={moodEntries} />
+          </div>
+        </>
+      )}
     </div>
   );
 };
 
 export default MoodTracker;
+
+
+
 
 
 

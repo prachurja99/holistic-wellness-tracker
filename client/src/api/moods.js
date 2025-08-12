@@ -1,38 +1,38 @@
+// client/src/api/moods.js
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: '/api' // proxy to http://localhost:5000 (your package.json has proxy)
-});
-
-// helper to attach token
-const authHeaders = (token) => token ? { Authorization: `Bearer ${token}` } : {};
-
-export const createMood = async (data, token) => {
-  try {
-    const res = await api.post('/moods', data, { headers: authHeaders(token) });
-    return res.data;
-  } catch (err) {
-    console.error('createMood api error', err?.response?.data || err.message);
-    return { success: false, message: err?.response?.data?.message || err.message };
-  }
-};
+const API_URL = '/api/moods';
 
 export const fetchMoods = async (token) => {
   try {
-    const res = await api.get('/moods', { headers: authHeaders(token) });
-    return res.data;
+    const { data } = await axios.get(API_URL, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return { success: true, moods: data };
   } catch (err) {
-    console.error('fetchMoods api error', err?.response?.data || err.message);
-    return { success: false, message: err?.response?.data?.message || err.message };
+    return { success: false, message: err.response?.data?.message || err.message };
+  }
+};
+
+export const createMood = async (payload, token) => {
+  try {
+    const { data } = await axios.post(API_URL, payload, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return { success: true, mood: data };
+  } catch (err) {
+    return { success: false, message: err.response?.data?.message || err.message };
   }
 };
 
 export const deleteMoodApi = async (id, token) => {
   try {
-    const res = await api.delete(`/moods/${id}`, { headers: authHeaders(token) });
-    return res.data;
+    await axios.delete(`${API_URL}/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return { success: true };
   } catch (err) {
-    console.error('deleteMood api error', err?.response?.data || err.message);
-    return { success: false, message: err?.response?.data?.message || err.message };
+    return { success: false, message: err.response?.data?.message || err.message };
   }
 };
+

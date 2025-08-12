@@ -1,56 +1,36 @@
 const Mood = require('../models/Mood');
 
-// POST /api/moods
-const createMood = async (req, res) => {
+exports.createMood = async (req, res) => {
   try {
-    const userId = req.user.userId; // set by your auth middleware
-    const { moodValue, moodEmoji, note, timestamp } = req.body;
-
-    if (typeof moodValue === 'undefined') {
-      return res.status(400).json({ success: false, message: 'moodValue is required' });
-    }
-
-    const mood = new Mood({
-      user: userId,
-      moodValue,
-      moodEmoji: moodEmoji || '',
-      note: note || '',
-      timestamp: timestamp ? new Date(timestamp) : undefined
+    const mood = await Mood.create({
+      user: req.user._id,
+      moodValue: req.body.moodValue,
+      moodEmoji: req.body.moodEmoji,
+      note: req.body.note,
+      timestamp: req.body.timestamp || Date.now()
     });
-
-    await mood.save();
-
-    res.status(201).json({ success: true, mood });
-  } catch (error) {
-    console.error('createMood error:', error);
-    res.status(500).json({ success: false, message: 'Server error creating mood', error: error.message });
+    res.status(201).json(mood);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-// GET /api/moods
-const getMoods = async (req, res) => {
+exports.getMoods = async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const moods = await Mood.find({ user: userId }).sort({ timestamp: -1 });
-    res.json({ success: true, moods });
-  } catch (error) {
-    console.error('getMoods error:', error);
-    res.status(500).json({ success: false, message: 'Server error fetching moods', error: error.message });
+    const moods = await Mood.find({ user: req.user._id }).sort({ timestamp: -1 });
+    res.json(moods);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-// DELETE /api/moods/:id
-const deleteMood = async (req, res) => {
+exports.deleteMood = async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const moodId = req.params.id;
-    const mood = await Mood.findOneAndDelete({ _id: moodId, user: userId });
-    if (!mood) return res.status(404).json({ success: false, message: 'Mood not found' });
-    res.json({ success: true, message: 'Mood deleted' });
-  } catch (error) {
-    console.error('deleteMood error:', error);
-    res.status(500).json({ success: false, message: 'Server error deleting mood', error: error.message });
+    const mood = await Mood.findOneAndDelete({ _id: req.params.id, user: req.user._id });
+    if (!mood) return res.status(404).json({ message: 'Mood not found' });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-module.exports = { createMood, getMoods, deleteMood };

@@ -1,0 +1,54 @@
+/* ===== Global Background & Typography ===== */
+body {
+  margin: 0;
+  padding: 0;
+  /* Darkened the gradient slightly for more depth */
+  background: linear-gradient(135deg, #e1e6eb, #d4dae1);
+  font-family: 'Montserrat', sans-serif;
+  color: #333;
+  min-height: 100vh;
+}
+
+/* ===== Page Container ===== */
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 1rem;
+}
+
+/* ===== Card Styling (for sections) ===== */
+.card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1rem;
+}
+
+/* ===== Buttons (global style enhancement) ===== */
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  background-color: #657786;
+  color: #e0e6eb;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #506070;
+  transform: translateY(-2px);
+}
+
+/* ===== Links ===== */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:hover {
+  color: #a1b8cc;
+}
+

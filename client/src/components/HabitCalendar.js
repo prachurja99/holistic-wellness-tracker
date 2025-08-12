@@ -1,22 +1,27 @@
-// src/components/HabitCalendar.js
 import React, { useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import './HabitCalendar.css'; // CSS for .completed-date
+import './HabitCalendar.css';
 
-const HabitCalendar = ({ completion = [], onDateToggle }) => {
+const HabitCalendar = ({ completion = [], onDateToggle, category }) => {
   const [selectedDates, setSelectedDates] = useState([]);
 
-  // Sync local selectedDates when completion prop changes
+  // Helper: format to local YYYY-MM-DD
+  const formatDateLocal = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  };
+
+  // Sync state when parent sends completion data
   useEffect(() => {
     const dates = completion.map((dateStr) => new Date(dateStr));
     setSelectedDates(dates);
   }, [completion]);
 
   const handleDateClick = (date) => {
-    const dateStr = date.toISOString().split('T')[0];
-
-    // Call parent function safely
+    const dateStr = formatDateLocal(date);
     if (onDateToggle && typeof onDateToggle === 'function') {
       onDateToggle(dateStr);
     }
@@ -24,9 +29,9 @@ const HabitCalendar = ({ completion = [], onDateToggle }) => {
 
   const tileClassName = ({ date, view }) => {
     if (view === 'month') {
-      const dateStr = date.toISOString().split('T')[0];
+      const dateStr = formatDateLocal(date);
       if (completion.includes(dateStr)) {
-        return 'completed-date';
+        return `completed-date ${category?.toLowerCase() || 'default'}-habit`;
       }
     }
     return null;
@@ -43,6 +48,7 @@ const HabitCalendar = ({ completion = [], onDateToggle }) => {
 };
 
 export default HabitCalendar;
+
 
 
 
