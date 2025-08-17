@@ -2,37 +2,29 @@ const express = require('express');
 const { protect } = require('../middleware/authMiddleware');
 const {
   getGoals,
-  createGoal,
-  updateGoal,
-  deleteGoal,
-  markGoalFinished,     // ✅ make sure this is exported from goalController.js
-  unmarkGoalFinished,   // ✅ optional: for un-finishing a goal
-  getGoalCompletionStats // ✅ optional: for stats/pie chart
+  create,
+  update,
+  delete: deleteGoal,
+  markFinished,
+  unmarkFinished,
+  getStats,
+  getFinished
 } = require('../controllers/goalController');
 
 const router = express.Router();
 
-// Get all goals (filter by type optional)
 router.get('/', protect, getGoals);
-
-// Create a goal
-router.post('/', protect, createGoal);
-
-// Update a goal
-router.put('/:id', protect, updateGoal);
-
-// Delete a goal
+router.get('/finished', protect, getFinished);
+router.post('/', protect, create);
+router.put('/:id', protect, update);
 router.delete('/:id', protect, deleteGoal);
-
-// Mark goal as finished
-router.post('/finish', protect, markGoalFinished);
-
-// Unmark goal as finished
-router.post('/unfinish', protect, unmarkGoalFinished);
-
-// Get goal stats (finished vs unfinished)
-router.get('/stats', protect, getGoalCompletionStats);
+router.post('/finish', protect, markFinished);
+router.post('/unfinish', protect, unmarkFinished);
+router.get('/stats', protect, getStats);
 
 module.exports = router;
+
+
+
 
 

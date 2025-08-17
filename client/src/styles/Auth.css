@@ -1,0 +1,119 @@
+.auth-bg {
+  min-height: 100vh;
+  background: linear-gradient(120deg, #ffe7e0 0%, #ffb993 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.auth-card {
+  background: #fff7f3;
+  padding: 2.5rem 2rem 2rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(252, 154, 123, 0.10);
+  width: 100%;
+  max-width: 370px;
+  text-align: center;
+}
+
+.auth-logo {
+  width: 90px;
+  margin-bottom: 1rem;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  border: 1.5px solid #ffb993;
+  border-radius: 10px;
+  font-size: 1rem;
+  outline: none;
+  background: #fff;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+
+.auth-input:focus {
+  border: 2px solid #ff8a65;
+}
+
+.auth-btn {
+  width: 100%;
+  background: linear-gradient(90deg, #ff8a65 0%, #ffb993 100%);
+  color: #ad5220;
+  padding: 0.7rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0.8rem 0 0.4rem 0;
+  box-shadow: 0 2px 8px rgba(252, 154, 123, 0.07);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.auth-btn:hover {
+  background: linear-gradient(90deg, #ffb993 10%, #ff8a65 90%);
+  color: #e05a32;
+}
+
+.auth-message {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  color: #d8603b;
+  background: #ffe7e0;
+  border-radius: 6px;
+  padding: 0.4rem;
+}
+
+.auth-alt {
+  color: #ad6842;
+  font-size: 0.96rem;
+  margin-top: 1rem;
+}
+
+.auth-alt a {
+  color: #ff8a65;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.auth-alt a:hover {
+  color: #ad6842;
+}
+
+.auth-toggle-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  margin: 0 0.25rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  background: #fff7f3;
+  color: #ad5220;
+  box-shadow: 0 2px 8px rgba(252, 154, 123, 0.08);
+  transition: background 0.3s, color 0.3s;
+}
+
+.toggle-btn.active {
+  background: linear-gradient(90deg, #ff8a65 0%, #ffb993 100%);
+  color: #ad5220;
+  box-shadow: 0 4px 12px rgba(252, 154, 123, 0.13);
+}
+
+.toggle-btn:hover:not(.active) {
+  background-color: #ffe7e0;
+}
+
+
+

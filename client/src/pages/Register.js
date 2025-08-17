@@ -1,7 +1,8 @@
-// src/pages/Register.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../api/auth';
+import logo from '../assets/470-project-logo.png';
+import '../styles/Auth.css';
 
 export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -15,8 +16,7 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = await registerUser(form);
-
-    if (data?.success || data?.user || data?._id) {
+    if (data?.success) {
       setMessage('Registration successful! You can now login.');
       navigate('/login');
     } else {
@@ -25,42 +25,56 @@ export default function Register() {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <input 
-          name="name" 
-          placeholder="Name"
-          value={form.name} 
-          onChange={handleChange} 
-          required 
+    <div className="auth-bg">
+      <div className="auth-card">
+        <img
+          src={logo}
+          alt="Wellnesstic Logo"
+          style={{ height: 54, marginBottom: 24, display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
         />
-        <input 
-          name="email" 
-          type="email" 
-          placeholder="Email"
-          value={form.email} 
-          onChange={handleChange} 
-          required 
-        />
-        <input 
-          name="password" 
-          type="password" 
-          placeholder="Password"
-          value={form.password} 
-          onChange={handleChange} 
-          required 
-        />
-        <button type="submit">Register</button>
-      </form>
-      {message && <p>{message}</p>}
-
-      <p>
-        Already have an account? <Link to="/login">Login here</Link>
-      </p>
+        <h2>Create Account</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            name="name"
+            placeholder="Full Name"
+            value={form.name}
+            onChange={handleChange}
+            className="auth-input"
+            required
+          />
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            className="auth-input"
+            required
+          />
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            className="auth-input"
+            required
+          />
+          {message && <div className="auth-message">{message}</div>}
+          <button type="submit" className="auth-btn">Register</button>
+        </form>
+        <div className="auth-alt">
+          Already have an account? <Link to="/login">Login here</Link>
+        </div>
+      </div>
     </div>
   );
 }
+
+
+
+
+
 
 
 

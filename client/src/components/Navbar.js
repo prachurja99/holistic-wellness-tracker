@@ -1,75 +1,124 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import logo from '../assets/470-project-logo.png';
+import '../styles/Navbar.css';
 
-const Navbar = ({ onLogout }) => {
+const Navbar = ({ user, onLogout }) => {
   const navigate = useNavigate();
   const isLoggedIn = !!localStorage.getItem('token');
 
   const handleLogout = () => {
-    // 1️⃣ Remove auth token
-    localStorage.removeItem('token');
-
-    // 2️⃣ Clear any saved app state in localStorage
-    localStorage.removeItem('userProfile');
-    localStorage.removeItem('goals');
-    localStorage.removeItem('moods');
-    localStorage.removeItem('habits');
-    localStorage.removeItem('journal');
-
-    // 3️⃣ Optional: Clear session storage too
-    sessionStorage.clear();
-
-    // 4️⃣ Call any extra cleanup logic from parent if passed
+    localStorage.clear();
     if (onLogout) onLogout();
-
-    // 5️⃣ Redirect to login
     navigate('/login', { replace: true });
   };
 
-  const linkStyle = {
-    color: '#fff',
-    textDecoration: 'none',
-    padding: '0.5rem 1rem',
-    display: 'block'
-  };
-
   return (
-    <nav style={{ backgroundColor: '#657786', padding: '0.5rem 0' }}>
-      <ul style={{ listStyle: 'none', display: 'flex', margin: 0, padding: 0 }}>
-        {isLoggedIn && (
+    <nav
+      className="navbar"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 24px',
+        height: '64px',
+        background: '#fff',
+      }}
+    >
+      {/* Left: Logo */}
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <Link to="/dashboard">
+          <img
+            src={logo}
+            alt="Wellnesstic Logo"
+            style={{ height: '40px', verticalAlign: 'middle' }}
+          />
+        </Link>
+      </div>
+
+      {/* Center: Nav links */}
+      <ul
+        className="nav-list"
+        style={{ display: 'flex', gap: '20px', margin: 0, padding: 0, listStyleType: 'none' }}
+      >
+        {isLoggedIn ? (
           <>
-            <li><Link style={linkStyle} to="/dashboard">Dashboard</Link></li>
-            <li><Link style={linkStyle} to="/mood-tracker">Mood</Link></li>
-            <li><Link style={linkStyle} to="/habit-tracker">Habits</Link></li>
-            <li><Link style={linkStyle} to="/journal">Journal</Link></li>
-            <li><Link style={linkStyle} to="/goals">Goals</Link></li>
             <li>
-              <button
-                onClick={handleLogout}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  padding: '0.5rem 1rem'
-                }}
-              >
-                Logout
-              </button>
+              <Link className="nav-link" to="/dashboard">
+                Dashboard
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" to="/mood-tracker">
+                Mood
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" to="/habit-tracker">
+                Habits
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" to="/journal">
+                Journal
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" to="/goals">
+                Goals
+              </Link>
+            </li>
+          </>
+        ) : (
+          <>
+            <li>
+              <Link className="nav-link" to="/login">
+                Login
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" to="/register">
+                Register
+              </Link>
             </li>
           </>
         )}
-        {!isLoggedIn && (
+      </ul>
+
+      {/* Right: User & Logout */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {isLoggedIn && (
           <>
-            <li><Link style={linkStyle} to="/login">Login</Link></li>
-            <li><Link style={linkStyle} to="/register">Register</Link></li>
+            <span style={{ marginRight: 8 }}>
+              Hi, {user?.name || user?.email || 'User'}
+            </span>
+            {user?.profileImage ? (
+              <img
+                src={user.profileImage}
+                alt="Profile"
+                style={{ width: 32, height: 32, borderRadius: '50%', marginRight: 8 }}
+              />
+            ) : (
+              <div
+                style={{ width: 32, height: 32, borderRadius: '50%', background: '#ccc', marginRight: 8 }}
+              />
+            )}
+            <button onClick={() => navigate('/profile')}>Profile</button>
+            <button onClick={handleLogout} className="nav-btn-logout">
+              Logout
+            </button>
           </>
         )}
-      </ul>
+      </div>
     </nav>
   );
 };
 
 export default Navbar;
+
+
+
+
+
 
 

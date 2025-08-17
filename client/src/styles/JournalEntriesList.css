@@ -1,0 +1,105 @@
+.journal-entries-list {
+  margin-top: 1rem;
+}
+
+.journal-card {
+  padding: 1rem;
+  border: 1px solid #ffb993;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  background-color: #fff7f3;
+  box-shadow: 0 2px 8px rgba(252, 154, 123, 0.12);
+}
+
+.journal-title {
+  margin-bottom: 0.25rem;
+  color: #d8603b;
+}
+
+.journal-meta {
+  font-size: 0.9rem;
+  color: #ad6842;
+  margin-bottom: 0.5rem;
+}
+
+.journal-content {
+  margin-top: 0.5rem;
+  color: #6d5e54;
+}
+
+.journal-input, .journal-textarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  border: 1.5px solid #ffb993;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  outline: none;
+  background: #fff;
+  transition: border-color 0.3s ease;
+}
+
+.journal-input:focus, .journal-textarea:focus {
+  border-color: #ff8a65;
+}
+
+.journal-textarea {
+  min-height: 80px;
+}
+
+.btn-edit, .btn-delete, .btn-save, .btn-cancel {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.btn-edit {
+  background-color: #ffb993;
+  color: #ad6842;
+  transition: background-color 0.3s;
+}
+
+.btn-edit:hover {
+  background-color: #ff8a65;
+  color: #fff;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: #fff;
+  transition: background-color 0.3s;
+}
+
+.btn-delete:hover {
+  background-color: #b02a37;
+}
+
+.btn-save {
+  background-color: #28a745;
+  color: #fff;
+  transition: background-color 0.3s;
+}
+
+.btn-save:hover {
+  background-color: #218838;
+}
+
+.btn-cancel {
+  background-color: #6c757d;
+  color: #fff;
+  transition: background-color 0.3s;
+}
+
+.btn-cancel:hover {
+  background-color: #5a6268;
+}
+
+.journal-no-entries {
+  font-style: italic;
+  color: #ad6842;
+}

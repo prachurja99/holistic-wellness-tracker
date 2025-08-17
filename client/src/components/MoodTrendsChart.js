@@ -1,4 +1,3 @@
-// src/components/MoodTrendsChart.js
 import React, { useRef, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
@@ -25,23 +24,21 @@ ChartJS.register(
 const MoodTrendsChart = ({ moodEntries }) => {
   const chartRef = useRef();
 
-  // DEBUG: See the raw mood entries
-  console.log('Mood Entries:', moodEntries);
-
-  // Process and sanitize entries
-  const processedEntries = moodEntries
-    .filter((entry) => {
-      const date = new Date(entry.timestamp);
-      return entry.timestamp && !isNaN(date);
-    })
-    .map((entry) => ({
-      date: new Date(entry.timestamp).toISOString().split('T')[0], // YYYY-MM-DD
-      mood: parseInt(entry.moodValue) || 0
+  const processedEntries = (Array.isArray(moodEntries) ? moodEntries : [])
+    .filter(entry =>
+      typeof entry.moodValue !== "undefined" &&
+      entry.timestamp &&
+      !isNaN(new Date(entry.timestamp)) &&
+      entry.moodValue !== null
+    )
+    .map(entry => ({
+      date: new Date(entry.timestamp).toISOString().split('T')[0],
+      mood: Number(entry.moodValue)
     }))
-    .reverse(); // Optional: to show oldest to newest
+    .reverse();
 
-  const labels = processedEntries.map((entry) => entry.date);
-  const dataPoints = processedEntries.map((entry) => entry.mood);
+  const labels = processedEntries.map(entry => entry.date);
+  const dataPoints = processedEntries.map(entry => entry.mood);
 
   const data = {
     labels,
@@ -50,8 +47,8 @@ const MoodTrendsChart = ({ moodEntries }) => {
         label: 'Mood Level',
         data: dataPoints,
         fill: false,
-        borderColor: 'rgba(75,192,192,1)',
-        backgroundColor: 'rgba(75,192,192,0.2)',
+        borderColor: '#ff8a65',
+        backgroundColor: 'rgba(255,138,101,0.15)',
         tension: 0.3,
         pointRadius: 5,
         pointHoverRadius: 7
@@ -70,7 +67,7 @@ const MoodTrendsChart = ({ moodEntries }) => {
       },
       tooltip: {
         callbacks: {
-          label: (context) => `Mood: ${context.parsed.y}`
+          label: context => `Mood: ${context.parsed.y}`
         }
       }
     },
@@ -96,10 +93,20 @@ const MoodTrendsChart = ({ moodEntries }) => {
     }
   }, [labels, dataPoints]);
 
+  if (dataPoints.length === 0) {
+    return (
+      <p style={{ textAlign: 'center', color: '#ad6842', margin: '2rem 0' }}>
+        No mood data to display yet.
+      </p>
+    );
+  }
+
   return <Line ref={chartRef} data={data} options={options} />;
 };
 
 export default MoodTrendsChart;
+
+
 
 
 

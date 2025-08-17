@@ -1,6 +1,5 @@
-// client/src/components/MoodEntryForm.js
 import React, { useState } from 'react';
-import { createMood as apiCreateMood } from '../api/moods';
+import '../styles/MoodEntryForm.css';
 
 const moodOptions = [
   { label: '😊 Happy', value: 8 },
@@ -14,7 +13,6 @@ const MoodEntryForm = ({ onAddMood }) => {
   const [moodValue, setMoodValue] = useState('');
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
-  const token = localStorage.getItem('token');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,44 +25,36 @@ const MoodEntryForm = ({ onAddMood }) => {
       timestamp: new Date().toISOString()
     };
 
-    if (token) {
-      setLoading(true);
-      const res = await apiCreateMood(payload, token);
-      setLoading(false);
-      if (res.success) {
-        // pass saved mood (from backend) to parent
-        onAddMood && onAddMood(res.mood);
-      } else {
-        alert(res.message || 'Failed to save mood to server');
-      }
-    } else {
-      // fallback: save locally
-      const localEntry = { id: Date.now(), ...payload };
-      onAddMood && onAddMood(localEntry);
-    }
+    // Only add locally (no API)
+    const localEntry = { id: Date.now(), ...payload };
+    onAddMood && onAddMood(localEntry);
 
     setMoodValue('');
     setNote('');
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '1rem' }}>
+    <form onSubmit={handleSubmit} className="mood-entry-form">
       <label>
         Mood:
-        <select value={moodValue} onChange={(e) => setMoodValue(e.target.value)} required style={{ marginLeft: '0.5rem' }}>
+        <select value={moodValue} onChange={(e) => setMoodValue(e.target.value)} required className="mood-select">
           <option value="">Select mood</option>
           {moodOptions.map(({ label, value }) => (
             <option key={value} value={value}>{label}</option>
           ))}
         </select>
       </label>
-      <br />
       <label>
         Note (optional):
-        <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Write something about your mood..." rows={3} style={{ width: '100%', marginTop: '0.5rem' }} />
+        <textarea
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="Write something about your mood..."
+          rows={3}
+          className="mood-textarea"
+        />
       </label>
-      <br />
-      <button type="submit" style={{ marginTop: '0.5rem' }} disabled={loading}>
+      <button type="submit" className="mood-submit-btn" disabled={loading}>
         {loading ? 'Saving...' : 'Add Mood'}
       </button>
     </form>
@@ -72,6 +62,10 @@ const MoodEntryForm = ({ onAddMood }) => {
 };
 
 export default MoodEntryForm;
+
+
+
+
 
 
 

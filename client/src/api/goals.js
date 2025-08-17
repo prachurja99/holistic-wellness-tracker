@@ -1,7 +1,13 @@
-export const fetchGoals = async (token, goalType) => {
+// src/api/goals.js
+
+export const fetchGoals = async (token, goalType, date) => {
   try {
     let url = '/api/goals';
-    if (goalType) url += `?goalType=${goalType}`;
+    if (goalType && date) {
+      url += `?goalType=${goalType}&date=${date}`;
+    } else if (goalType) {
+      url += `?goalType=${goalType}`;
+    }
     const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
     return await res.json();
   } catch (err) {
@@ -9,12 +15,27 @@ export const fetchGoals = async (token, goalType) => {
   }
 };
 
-export const createGoal = async (goalData, token) => {
+export const fetchFinishedGoals = async (token, goalType, date) => {
+  try {
+    let url = '/api/goals/finished';
+    if (goalType && date) {
+      url += `?goalType=${goalType}&date=${date}`;
+    } else if (goalType) {
+      url += `?goalType=${goalType}`;
+    }
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    return await res.json();
+  } catch (err) {
+    return { success: false, message: err.message };
+  }
+};
+
+export const create = async (data, token) => {
   try {
     const res = await fetch('/api/goals', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify(goalData)
+      body: JSON.stringify(data),
     });
     return await res.json();
   } catch (err) {
@@ -22,12 +43,12 @@ export const createGoal = async (goalData, token) => {
   }
 };
 
-export const updateGoal = async (id, goalData, token) => {
+export const update = async (id, data, token) => {
   try {
     const res = await fetch(`/api/goals/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify(goalData)
+      body: JSON.stringify(data),
     });
     return await res.json();
   } catch (err) {
@@ -35,25 +56,23 @@ export const updateGoal = async (id, goalData, token) => {
   }
 };
 
-export const deleteGoalApi = async (id, token) => {
+export const remove = async (id, token) => {
   try {
     const res = await fetch(`/api/goals/${id}`, {
       method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     });
     return await res.json();
   } catch (err) {
     return { success: false, message: err.message };
   }
 };
-export const markGoalFinished = async (goalId, date, goalType, token) => {
+
+export const markFinished = async (goalId, date, goalType, token) => {
   try {
     const res = await fetch('/api/goals/finish', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ goalId, date, goalType }),
     });
     return await res.json();
@@ -61,6 +80,20 @@ export const markGoalFinished = async (goalId, date, goalType, token) => {
     return { success: false, message: err.message };
   }
 };
+
+export const unmarkFinished = async (goalId, date, goalType, token) => {
+  try {
+    const res = await fetch('/api/goals/unfinish', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ goalId, date, goalType }),
+    });
+    return await res.json();
+  } catch (err) {
+    return { success: false, message: err.message };
+  }
+};
+
 export const fetchGoalStats = async (goalType, date, token) => {
   try {
     const res = await fetch(`/api/goals/stats?goalType=${goalType}&date=${date}`, {
@@ -71,21 +104,14 @@ export const fetchGoalStats = async (goalType, date, token) => {
     return { success: false, message: err.message };
   }
 };
-export const unmarkGoalFinished = async (goalId, date, goalType, token) => {
-  try {
-    const res = await fetch('/api/goals/unfinish', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ goalId, date, goalType }),
-    });
-    return await res.json();
-  } catch (err) {
-    return { success: false, message: err.message };
-  }
-};
+
+
+// src/api/goals.js (add this function)
+
+
+
+
+
 
 
 

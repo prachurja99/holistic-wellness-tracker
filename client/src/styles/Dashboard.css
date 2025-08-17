@@ -1,0 +1,31 @@
+.dashboard-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: 'Montserrat', sans-serif;
+  color: #ad6842; /* Dark coral */
+}
+
+.dashboard-container h2 {
+  color: #ff8a65; /* Coral accent */
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.dashboard-card {
+  background: #fff7f3; /* Peachy card background */
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 5px 15px rgba(252, 154, 123, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.dashboard-card:hover {
+  box-shadow: 0 10px 25px rgba(252, 154, 123, 0.15);
+}
+
+.dashboard-card h3 {
+  color: #d8603b; /* Darker coral for headings */
+  margin-bottom: 1rem;
+}

@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
+import '../styles/JournalEntriesList.css';
 
 const JournalEntriesList = ({ entries = [], onDelete = () => {}, onEdit = () => {} }) => {
-  // Tracks which entry is currently being edited
   const [editingId, setEditingId] = useState(null);
-
-  // Holds form data for the entry being edited
   const [editData, setEditData] = useState({
     title: '',
     content: '',
@@ -12,7 +10,6 @@ const JournalEntriesList = ({ entries = [], onDelete = () => {}, onEdit = () => 
     mood: ''
   });
 
-  // Start editing a specific entry
   const startEditing = (entry) => {
     setEditingId(entry._id || entry.id);
     setEditData({
@@ -23,18 +20,15 @@ const JournalEntriesList = ({ entries = [], onDelete = () => {}, onEdit = () => 
     });
   };
 
-  // Handle changes in edit form inputs
   const handleEditChange = (e) => {
     setEditData({ ...editData, [e.target.name]: e.target.value });
   };
 
-  // Submit the updated entry
   const submitEdit = () => {
     if (!editData.title.trim() || !editData.content.trim()) {
       alert('Title and content are required');
       return;
     }
-
     if (typeof onEdit === 'function') {
       onEdit(editingId, editData);
     } else {
@@ -43,12 +37,10 @@ const JournalEntriesList = ({ entries = [], onDelete = () => {}, onEdit = () => 
     setEditingId(null);
   };
 
-  // Cancel edit mode
   const cancelEdit = () => {
     setEditingId(null);
   };
 
-  // Format date for display
   const formatDate = (isoString) => {
     if (!isoString) return '';
     const date = new Date(isoString);
@@ -58,15 +50,14 @@ const JournalEntriesList = ({ entries = [], onDelete = () => {}, onEdit = () => 
     });
   };
 
-  // If there are no entries
   if (!entries || entries.length === 0) {
-    return <p>No journal entries yet.</p>;
+    return <p className="journal-no-entries">No journal entries yet.</p>;
   }
 
   return (
-    <div style={{ marginTop: '1rem' }}>
+    <div className="journal-entries-list">
       {entries.map((entry) => (
-        <div key={entry._id || entry.id} style={cardStyle}>
+        <div key={entry._id || entry.id} className="journal-card">
           {editingId === (entry._id || entry.id) ? (
             <>
               <input
@@ -74,46 +65,44 @@ const JournalEntriesList = ({ entries = [], onDelete = () => {}, onEdit = () => 
                 name="title"
                 value={editData.title}
                 onChange={handleEditChange}
-                style={inputStyle}
+                className="journal-input"
               />
               <textarea
                 name="content"
                 value={editData.content}
                 onChange={handleEditChange}
-                style={textareaStyle}
+                className="journal-textarea"
               />
               <input
                 type="text"
                 name="tag"
                 value={editData.tag}
                 onChange={handleEditChange}
-                style={inputStyle}
                 placeholder="Tag (optional)"
+                className="journal-input"
               />
               <input
                 type="text"
                 name="mood"
                 value={editData.mood}
                 onChange={handleEditChange}
-                style={inputStyle}
                 placeholder="Mood (optional)"
+                className="journal-input"
               />
-
-              <button onClick={submitEdit} style={saveBtnStyle}>Save</button>
-              <button onClick={cancelEdit} style={cancelBtnStyle}>Cancel</button>
+              <button onClick={submitEdit} className="btn-save">Save</button>
+              <button onClick={cancelEdit} className="btn-cancel">Cancel</button>
             </>
           ) : (
             <>
-              <h3 style={{ marginBottom: '0.25rem' }}>{entry.title}</h3>
-              <div style={{ fontSize: '0.9rem', color: '#555' }}>
+              <h3 className="journal-title">{entry.title}</h3>
+              <div className="journal-meta">
                 <span>{formatDate(entry.date)}</span>
                 {entry.tag && <span> • Tag: {entry.tag}</span>}
                 {entry.mood && <span> • Mood: {entry.mood}</span>}
               </div>
-              <p style={{ marginTop: '0.5rem' }}>{entry.content || entry.text}</p>
-
-              <button onClick={() => startEditing(entry)} style={editBtnStyle}>Edit</button>
-              <button onClick={() => onDelete(entry._id || entry.id)} style={deleteBtnStyle}>Delete</button>
+              <p className="journal-content">{entry.content || entry.text}</p>
+              <button onClick={() => startEditing(entry)} className="btn-edit">Edit</button>
+              <button onClick={() => onDelete(entry._id || entry.id)} className="btn-delete">Delete</button>
             </>
           )}
         </div>
@@ -122,35 +111,8 @@ const JournalEntriesList = ({ entries = [], onDelete = () => {}, onEdit = () => 
   );
 };
 
-// Styles
-const cardStyle = {
-  padding: '1rem',
-  border: '1px solid #ccc',
-  borderRadius: '6px',
-  marginBottom: '1rem',
-  backgroundColor: '#f9f9f9'
-};
-const inputStyle = {
-  padding: '0.5rem',
-  marginBottom: '0.5rem',
-  width: '100%',
-  borderRadius: '4px',
-  border: '1px solid #ccc'
-};
-const textareaStyle = {
-  padding: '0.5rem',
-  marginBottom: '0.5rem',
-  minHeight: '80px',
-  width: '100%',
-  borderRadius: '4px',
-  border: '1px solid #ccc'
-};
-const editBtnStyle = { padding: '0.4rem 0.7rem', marginRight: '0.5rem', background: '#ffc107', border: 'none', borderRadius: '4px', cursor: 'pointer' };
-const deleteBtnStyle = { padding: '0.4rem 0.7rem', background: 'red', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' };
-const saveBtnStyle = { padding: '0.4rem 0.7rem', marginRight: '0.5rem', background: 'green', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' };
-const cancelBtnStyle = { padding: '0.4rem 0.7rem', background: 'gray', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' };
-
 export default JournalEntriesList;
+
 
 
 

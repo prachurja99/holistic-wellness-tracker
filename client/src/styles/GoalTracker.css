@@ -1,0 +1,198 @@
+/* Wrapper expands full viewport */
+.goaltracker-wrapper-full {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  font-family: 'Montserrat', sans-serif;
+  color: #ad6842;
+  background: #fff7f3;
+  overflow: hidden;
+}
+
+.goaltracker-sidebar-full {
+  width: 220px;
+  background: #ffb993;
+  border-right: 1px solid #ff8a65;
+  padding: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.goaltracker-sidebar-btn {
+  background: transparent;
+  border: none;
+  padding: 1.2rem 1.8rem;
+  margin: 0.25rem 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-align: left;
+  color: #ad6842;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  outline: none;
+}
+
+.goaltracker-sidebar-btn:hover {
+  background: #ff8a65;
+  color: white;
+}
+
+.goaltracker-sidebar-btn.active {
+  background: #ff8a65;
+  color: white;
+  box-shadow: inset 6px 0 0 0 #ad6842;
+}
+
+.goaltracker-main-full {
+  flex-grow: 1;
+  padding: 2rem 3rem;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.goaltracker-main-full h2 {
+  color: #ff8a65;
+  margin-bottom: 2rem;
+}
+
+/* Reuse rest of goaltracker styles unchanged */
+
+.goaltracker-add {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  max-width: 600px;
+}
+
+.goaltracker-input {
+  flex-grow: 1;
+  padding: 0.4rem 0.6rem;
+  border-radius: 5px;
+  border: 1.5px solid #ffb993;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.goaltracker-input:focus {
+  border-color: #ff8a65;
+}
+
+.goaltracker-btn-add {
+  background: #ff8a65;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(252, 154, 123, 0.3);
+  transition: background-color 0.3s ease;
+}
+
+.goaltracker-btn-add:hover {
+  background-color: #e05a32;
+}
+
+.goaltracker-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+  max-width: 600px;
+}
+
+.goaltracker-item {
+  background: #fff7f3;
+  padding: 0.7rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(252, 154, 123, 0.12);
+  transition: box-shadow 0.3s ease;
+}
+
+.goaltracker-item:hover {
+  box-shadow: 0 3px 8px rgba(252, 154, 123, 0.18);
+}
+
+.goaltracker-label {
+  flex: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #ad6842;
+}
+
+.goaltracker-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.goaltracker-btn-delete {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.goaltracker-btn-delete:hover {
+  background-color: #b02a37;
+}
+
+.goaltracker-empty {
+  padding: 1rem;
+  text-align: center;
+  font-style: italic;
+  color: #aaa;
+}
+
+/* Responsive */
+
+@media (max-width: 1024px) {
+  .goaltracker-wrapper-full {
+    flex-direction: column;
+    height: auto;
+  }
+  .goaltracker-sidebar-full {
+    flex-direction: row;
+    width: 100%;
+    height: auto;
+    padding: 1rem 0;
+    border-right: none;
+    border-bottom: 1px solid #ff8a65;
+  }
+  .goaltracker-sidebar-btn {
+    flex-grow: 1;
+    margin: 0;
+    padding: 0.75rem 0;
+    font-size: 1rem;
+    text-align: center;
+    box-shadow: none !important;
+  }
+  .goaltracker-sidebar-btn.active {
+    box-shadow: none !important;
+    border-bottom: 3px solid #ff8a65;
+    background: transparent;
+    color: #ff8a65;
+  }
+  .goaltracker-main-full {
+    padding: 1.5rem 1rem;
+  }
+}
+
+
+

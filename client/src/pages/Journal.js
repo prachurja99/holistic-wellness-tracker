@@ -1,15 +1,14 @@
-// src/pages/Journal.js
 import React, { useEffect, useState } from 'react';
 import { fetchJournals, addJournal, updateJournal, deleteJournal } from '../api/journal';
 import JournalEntryForm from '../components/JournalEntryForm';
 import JournalEntriesList from '../components/JournalEntriesList';
+import '../styles/Journal.css';  // Import new CSS
 
 const Journal = () => {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem('token');
 
-  // Load entries from backend or localStorage
   useEffect(() => {
     const loadData = async () => {
       if (token) {
@@ -32,12 +31,10 @@ const Journal = () => {
     loadData();
   }, [token]);
 
-  // Keep local storage updated
   useEffect(() => {
     localStorage.setItem('journalEntries', JSON.stringify(entries));
   }, [entries]);
 
-  // Add new entry
   const handleAddEntry = async (newEntry) => {
     const entryWithDate = { ...newEntry, date: new Date().toISOString() };
     if (token) {
@@ -51,7 +48,6 @@ const Journal = () => {
     }
   };
 
-  // Delete entry
   const handleDeleteEntry = async (id) => {
     if (token) {
       const res = await deleteJournal(id, token);
@@ -63,7 +59,6 @@ const Journal = () => {
     }
   };
 
-  // Edit entry
   const handleEditEntry = async (id, updatedData) => {
     const updatedEntry = { ...updatedData, date: new Date().toISOString() };
     if (token) {
@@ -85,16 +80,15 @@ const Journal = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container journal-container">
       <h2>Journal</h2>
-      
-      {/* Form to add new entry */}
+
       <div className="card">
         <JournalEntryForm onAddEntry={handleAddEntry} />
       </div>
 
       {loading ? (
-        <p>Loading journal entries...</p>
+        <p className="loading-text">Loading journal entries...</p>
       ) : (
         <JournalEntriesList
           entries={entries}
@@ -107,6 +101,7 @@ const Journal = () => {
 };
 
 export default Journal;
+
 
 
 

@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import HabitForm from '../components/HabitForm';
 import HabitList from '../components/HabitList';
 import { fetchHabits, addHabit, deleteHabit, toggleCompletion } from '../api/habits';
+import '../styles/HabitTracker.css';
 
 const HabitTracker = () => {
   const [habits, setHabits] = useState([]);
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem('token');
 
-  // Load from backend OR localStorage
   useEffect(() => {
     const loadHabits = async () => {
       if (token) {
@@ -31,7 +31,6 @@ const HabitTracker = () => {
     loadHabits();
   }, [token]);
 
-  // Keep local cache in sync
   useEffect(() => {
     localStorage.setItem('habits', JSON.stringify(habits));
   }, [habits]);
@@ -41,7 +40,6 @@ const HabitTracker = () => {
       const res = await addHabit(habit, token);
       if (res.success) setHabits((prev) => [res.habit, ...prev]);
     } else {
-      // offline fallback
       const localHabit = { id: Date.now(), ...habit };
       setHabits((prev) => [localHabit, ...prev]);
     }
@@ -80,13 +78,13 @@ const HabitTracker = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container habittracker-container">
       <h2>Habit Tracker</h2>
       <div className="card">
         <HabitForm onAddHabit={handleAddHabit} />
       </div>
       {loading ? (
-        <p>Loading habits...</p>
+        <p className="loading-text">Loading habits...</p>
       ) : (
         <div className="card">
           <HabitList
@@ -101,6 +99,7 @@ const HabitTracker = () => {
 };
 
 export default HabitTracker;
+
 
 
 

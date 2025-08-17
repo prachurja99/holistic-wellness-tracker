@@ -1,0 +1,23 @@
+.moodtracker-container {
+  font-family: 'Montserrat', sans-serif;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  color: #ad6842; /* dark coral */
+}
+
+.moodtracker-container h2 {
+  color: #ff8a65; /* coral */
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.card {
+  background: #fff7f3; /* peachy background */
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 5px 15px rgba(252, 154, 123, 0.1);
+}
+
+

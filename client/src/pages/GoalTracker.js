@@ -1,181 +1,164 @@
 import React, { useEffect, useState } from 'react';
 import {
   fetchGoals,
-  createGoal,
-  deleteGoalApi,
-  markGoalFinished,
-  unmarkGoalFinished
+  fetchFinishedGoals,
+  create,
+  remove,
+  markFinished,
+  unmarkFinished,
+  fetchGoalStats,
 } from '../api/goals';
 import GoalCompletionChart from '../components/GoalCompletionChart';
+import '../styles/GoalTracker.css';
 
-const formatDateLocal = (date) => {
+const formatDate = (date) => {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
 };
 
-const GoalTracker = () => {
+function GoalTracker() {
   const token = localStorage.getItem('token');
   const [goals, setGoals] = useState([]);
-  const [goalType, setGoalType] = useState('daily');
+  const [finishedGoals, setFinishedGoals] = useState([]);
+  const [viewType, setViewType] = useState('daily');
   const [newGoal, setNewGoal] = useState({ title: '', goalType: 'daily' });
-  const [currentDate] = useState(formatDateLocal(new Date()));
-  const [finishedGoals, setFinishedGoals] = useState(new Set());
+  const [stats, setStats] = useState({ total: 0, finished: 0, unfinished: 0 });
+  const currentDate = formatDate(new Date());
 
-  // Fetch goals when goalType changes
-  useEffect(() => {
-    if (token) {
-      fetchGoals(token, goalType).then(res => {
-        if (res.success) {
-          setGoals(res.goals);
-          setFinishedGoals(new Set()); // in future we can preload finished from API
-        }
-      });
-    }
-  }, [goalType, token]);
-
-  // Handle marking & unmarking goal
-  const handleFinishToggle = async (goal) => {
+  // Fetch goals and stats based on current viewType
+  const loadGoalsAndStats = async () => {
     if (!token) return;
 
-    const updatedFinishedGoals = new Set(finishedGoals);
-    if (finishedGoals.has(goal._id)) {
-      updatedFinishedGoals.delete(goal._id);
-      await unmarkGoalFinished(goal._id, currentDate, goalType, token);
+    if (viewType === 'finished') {
+      const results = await Promise.all(['daily', 'weekly', 'monthly', 'yearly'].map(type =>
+        fetchFinishedGoals(token, type, currentDate)
+      ));
+      const combined = results
+        .filter(res => res.success && Array.isArray(res.goals))
+        .flatMap(res => res.goals);
+      setFinishedGoals(combined);
+      setStats({ total: 0, finished: 0, unfinished: 0 });
     } else {
-      updatedFinishedGoals.add(goal._id);
-      await markGoalFinished(goal._id, currentDate, goalType, token);
+      const activeRes = await fetchGoals(token, viewType, currentDate);
+      if (activeRes.success) setGoals(activeRes.goals);
+      const statsRes = await fetchGoalStats(viewType, currentDate, token);
+      if (statsRes.success) setStats({ total: statsRes.total, finished: statsRes.finished, unfinished: statsRes.unfinished });
     }
-    setFinishedGoals(updatedFinishedGoals);
   };
 
-  // Add new goal
-  const handleAddGoal = async () => {
+  useEffect(() => {
+    loadGoalsAndStats();
+    setNewGoal({ title: '', goalType: viewType });
+  }, [viewType, token, currentDate]);
+
+  const handleAdd = async () => {
     if (!newGoal.title.trim()) return;
-    const res = await createGoal(newGoal, token);
+    const toCreate = { ...newGoal, goalType: viewType === 'finished' ? 'daily' : viewType };
+    const res = await create(toCreate, token);
     if (res.success) {
-      setGoals(prev => [res.goal, ...prev]);
-      setNewGoal({ title: '', goalType });
+      await loadGoalsAndStats();
+      setNewGoal({ title: '', goalType: viewType });
     }
   };
 
-  // Delete goal
   const handleDelete = async (id) => {
-    const res = await deleteGoalApi(id, token);
+    const res = await remove(id, token);
     if (res.success) {
-      setGoals(prev => prev.filter(g => g._id !== id));
-      setFinishedGoals(prev => {
-        const s = new Set(prev);
-        s.delete(id);
-        return s;
-      });
+      await loadGoalsAndStats();
     }
   };
+
+  const toggleComplete = async (goal) => {
+    if (!token) return;
+    if (goal.status === 'completed') {
+      await unmarkFinished(goal._id, currentDate, goal.goalType, token);
+    } else {
+      await markFinished(goal._id, currentDate, goal.goalType, token);
+    }
+    await loadGoalsAndStats();
+  };
+
+  const displayedGoals = viewType === 'finished' ? finishedGoals : goals;
 
   return (
-    <div className="container">
-      <h2>Goal Tracker</h2>
-
-      {/* Goal Type Tabs */}
-      <div style={{ marginBottom: '1rem' }}>
-        {['daily', 'weekly', 'monthly', 'yearly'].map(type => (
+    <div className="goaltracker-wrapper-full">
+      <aside className="goaltracker-sidebar-full">
+        {['daily', 'weekly', 'monthly', 'yearly', 'finished'].map(type => (
           <button
             key={type}
-            onClick={() => setGoalType(type)}
-            style={{
-              marginRight: '0.5rem',
-              backgroundColor: goalType === type ? '#007bff' : '#ccc',
-              color: '#fff',
-              padding: '0.5rem',
-              borderRadius: '5px',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className={viewType === type ? 'goaltracker-sidebar-btn active' : 'goaltracker-sidebar-btn'}
+            onClick={() => setViewType(type)}
           >
-            {type.toUpperCase()}
+            {type === 'finished' ? 'Finished Tasks' : type.charAt(0).toUpperCase() + type.slice(1)}
           </button>
         ))}
-      </div>
-
-      {/* Add Goal */}
-      <div style={{ marginBottom: '1rem' }}>
-        <input
-          type="text"
-          placeholder="Goal title"
-          value={newGoal.title}
-          onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value, goalType })}
-          style={{ padding: '0.4rem', marginRight: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
-        />
-        <button
-          onClick={handleAddGoal}
-          style={{
-            backgroundColor: '#28a745',
-            color: '#fff',
-            border: 'none',
-            padding: '0.5rem 1rem',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
-          Add Goal
-        </button>
-      </div>
-
-      {/* Chart */}
-      <GoalCompletionChart goalType={goalType} date={currentDate} token={token} />
-
-      {/* Goal List */}
-      <ul style={{ marginTop: '1rem', listStyle: 'none', padding: 0 }}>
-        {goals.length > 0 ? (
-          goals.map(g => (
-            <li
-              key={g._id}
-              style={{
-                background: '#fff',
-                padding: '0.5rem',
-                marginBottom: '0.5rem',
-                borderRadius: '5px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-              }}
-            >
-              <label style={{ flex: 1, cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={finishedGoals.has(g._id)}
-                  onChange={() => handleFinishToggle(g)}
-                  style={{ marginRight: '0.5rem' }}
-                />
-                <strong>{g.title}</strong> ({g.goalType})
-              </label>
-              <button
-                onClick={() => handleDelete(g._id)}
-                style={{
-                  backgroundColor: '#dc3545',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '0.3rem 0.6rem',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
-                X
-              </button>
-            </li>
-          ))
-        ) : (
-          <li style={{ textAlign: 'center', color: '#666', padding: '1rem' }}>
-            No goals found for this category. Add one above!
-          </li>
+      </aside>
+      <main className="goaltracker-main-full">
+        <h2>{viewType === 'finished' ? 'Finished Tasks' : `${viewType.charAt(0).toUpperCase() + viewType.slice(1)} Goals`}</h2>
+        {viewType !== 'finished' && (
+          <div className="goaltracker-add">
+            <input
+              type="text"
+              placeholder="Goal title"
+              value={newGoal.title}
+              onChange={e => setNewGoal({ ...newGoal, title: e.target.value })}
+              className="goaltracker-input"
+            />
+            <button onClick={handleAdd} className="goaltracker-btn-add">Add Goal</button>
+          </div>
         )}
-      </ul>
+        {viewType !== 'finished' && (
+          <GoalCompletionChart goalType={viewType} date={currentDate} token={token} />
+        )}
+        <ul className="goaltracker-list">
+          {displayedGoals.length > 0 ? (
+            displayedGoals.map(g => (
+              <li key={g._id} className="goaltracker-item">
+                <label className="goaltracker-label">
+                  <input
+                    type="checkbox"
+                    checked={g.status === 'completed'}
+                    onChange={() => toggleComplete(g)}
+                    disabled={viewType === 'finished'}
+                    className="goaltracker-checkbox"
+                  />
+                  <strong>{g.title}</strong> ({g.goalType})
+                </label>
+                {viewType !== 'finished' && (
+                  <button
+                    onClick={() => handleDelete(g._id)}
+                    className="goaltracker-btn-delete"
+                    aria-label="Delete goal"
+                  >
+                    ×
+                  </button>
+                )}
+              </li>
+            ))
+          ) : (
+            <li className="goaltracker-empty">No goals found for this category.</li>
+          )}
+        </ul>
+      </main>
     </div>
   );
-};
+}
 
 export default GoalTracker;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

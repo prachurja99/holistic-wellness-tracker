@@ -4,7 +4,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { fetchGoalStats } from '../api/goals';
 
-// ✅ Register required chart elements to fix "arc is not a registered element" error
+// Register required chart.js elements
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const GoalCompletionChart = ({ goalType, date, token }) => {
@@ -25,8 +25,8 @@ const GoalCompletionChart = ({ goalType, date, token }) => {
     datasets: [
       {
         data: [stats.finished, stats.unfinished],
-        backgroundColor: ['#4caf50', '#f44336'], // green & red
-        hoverBackgroundColor: ['#45a049', '#e53935']
+        backgroundColor: ['#4caf50', '#f44336'],
+        hoverBackgroundColor: ['#45a049', '#e53935'],
       }
     ]
   };
@@ -34,7 +34,7 @@ const GoalCompletionChart = ({ goalType, date, token }) => {
   return (
     <div style={{ maxWidth: '400px', margin: '1rem auto' }}>
       <h3 style={{ textAlign: 'center' }}>
-        {goalType.toUpperCase()} Goals Completion
+        {goalType ? goalType.toUpperCase() : ''} Goals Completion
       </h3>
       <Pie data={data} />
     </div>
@@ -42,4 +42,5 @@ const GoalCompletionChart = ({ goalType, date, token }) => {
 };
 
 export default GoalCompletionChart;
+
 

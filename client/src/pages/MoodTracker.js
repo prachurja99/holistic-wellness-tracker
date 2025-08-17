@@ -1,95 +1,63 @@
-// src/pages/MoodTracker.js
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useEffect } from 'react';
 import MoodEntryForm from '../components/MoodEntryForm';
 import MoodHistory from '../components/MoodHistory';
 import MoodTrendsChart from '../components/MoodTrendsChart';
-import { fetchMoods, createMood, deleteMoodApi } from '../api/moods';
+import '../styles/MoodTracker.css';
+
+const MOOD_ENTRIES_KEY = 'moodEntries';
 
 const MoodTracker = () => {
-  const [moodEntries, setMoodEntries] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const token = localStorage.getItem('token');
+  const [moodEntries, setMoodEntries] = useState(() => {
+    // Always initialize from localStorage!
+    try {
+      const stored = localStorage.getItem(MOOD_ENTRIES_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
 
-  // Load moods from backend OR localStorage
   useEffect(() => {
-    const loadData = async () => {
-      if (token) {
-        setLoading(true);
-        const res = await fetchMoods(token);
-        setLoading(false);
-
-        if (res.success) {
-          setMoodEntries(res.moods);
-          localStorage.setItem('moodEntries', JSON.stringify(res.moods));
-        } else {
-          console.warn('Backend fetch failed:', res.message, 'Using localStorage fallback');
-          const stored = localStorage.getItem('moodEntries');
-          if (stored) setMoodEntries(JSON.parse(stored));
-        }
-      } else {
-        const stored = localStorage.getItem('moodEntries');
-        if (stored) setMoodEntries(JSON.parse(stored));
-      }
-    };
-    loadData();
-  }, [token]);
-
-  // Keep localStorage up-to-date
-  useEffect(() => {
-    localStorage.setItem('moodEntries', JSON.stringify(moodEntries));
+    localStorage.setItem(MOOD_ENTRIES_KEY, JSON.stringify(moodEntries));
   }, [moodEntries]);
 
-  // Add mood entry
-  const handleAddMood = async (entry) => {
-    if (token) {
-      const res = await createMood(entry, token);
-      if (res.success) {
-        setMoodEntries(prev => [res.mood, ...prev]);
-        return;
-      }
-      console.warn('Could not save mood to backend:', res.message);
-    }
-    // Offline fallback
-    const localEntry = { id: Date.now(), ...entry };
-    setMoodEntries(prev => [localEntry, ...prev]);
+  const handleAddMood = (entry) => {
+    const id = entry.id || entry._id || Date.now();
+    setMoodEntries([{ ...entry, id }, ...moodEntries]);
   };
 
-  // Delete mood
-  const handleDeleteMood = async (id) => {
-    if (token) {
-      const res = await deleteMoodApi(id, token);
-      if (!res.success) {
-        console.warn('Could not delete mood from backend:', res.message);
-      }
-    }
-    setMoodEntries(prev => prev.filter(mood => mood._id !== id && mood.id !== id));
+  const handleDeleteMood = (id) => {
+    const updated = moodEntries.filter((entry) => (entry.id || entry._id) !== id);
+    setMoodEntries(updated);
   };
 
   return (
-    <div className="container">
+    <div className="container moodtracker-container">
       <h2>Mood Tracker</h2>
       <div className="card">
         <MoodEntryForm onAddMood={handleAddMood} />
       </div>
-
-      {loading ? (
-        <p>Loading moods...</p>
-      ) : (
-        <>
-          <div className="card">
-            <MoodHistory moodEntries={moodEntries} onDelete={handleDeleteMood} />
-          </div>
-          <div className="card">
-            <h3 style={{ marginTop: 0 }}>Mood Trends</h3>
-            <MoodTrendsChart moodEntries={moodEntries} />
-          </div>
-        </>
-      )}
+      <MoodHistory moodEntries={moodEntries} onDelete={handleDeleteMood} />
+      <div className="card" style={{ marginTop: '2rem' }}>
+        {moodEntries.length === 0 ? (
+          <p style={{ textAlign: 'center', color: '#ad6842' }}>
+            No mood data to display yet.
+          </p>
+        ) : (
+          <MoodTrendsChart moodEntries={moodEntries} />
+        )}
+      </div>
     </div>
   );
 };
 
 export default MoodTracker;
+
+
+
+
+
 
 
 

@@ -1,0 +1,60 @@
+.mood-history {
+  margin-top: 1rem;
+}
+
+.mood-history h3 {
+  color: #d8603b; /* darker coral */
+  margin-bottom: 1rem;
+}
+
+.mood-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.mood-item {
+  border: 1px solid #ffb993;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff7f3;
+  box-shadow: 0 2px 8px rgba(252, 154, 123, 0.1);
+}
+
+.mood-emoji {
+  font-size: 1.5rem;
+  margin-right: 8px;
+}
+
+.mood-note {
+  margin: 0.25rem 0 0 0;
+  color: #6d5e54;
+}
+
+.mood-delete-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.mood-delete-btn:hover {
+  background-color: #b02a37;
+}
+
+.mood-no-entries {
+  color: #ad6842;
+  font-style: italic;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+
+

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../styles/JournalEntryForm.css';
 
 const JournalEntryForm = ({ onAddEntry }) => {
   const [title, setTitle] = useState('');
@@ -21,10 +22,8 @@ const JournalEntryForm = ({ onAddEntry }) => {
       mood
     };
 
-    // Call function from parent (Journal.js)
     onAddEntry(newEntry);
 
-    // Clear form
     setTitle('');
     setContent('');
     setTag('');
@@ -32,66 +31,40 @@ const JournalEntryForm = ({ onAddEntry }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={formStyle}>
+    <form onSubmit={handleSubmit} className="journal-form">
       <input
         type="text"
         placeholder="Entry title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        style={inputStyle}
+        className="journal-input"
       />
       <textarea
         placeholder="Write your thoughts..."
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        style={textareaStyle}
+        className="journal-textarea"
       />
       <input
         type="text"
         placeholder="Tag (optional)"
         value={tag}
         onChange={(e) => setTag(e.target.value)}
-        style={inputStyle}
+        className="journal-input"
       />
       <input
         type="text"
         placeholder="Mood (optional)"
         value={mood}
         onChange={(e) => setMood(e.target.value)}
-        style={inputStyle}
+        className="journal-input"
       />
-      <button type="submit" style={buttonStyle}>Add Entry</button>
+      <button type="submit" className="btn-add">Add Entry</button>
     </form>
   );
 };
 
-// Simple styles
-const formStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  marginBottom: '1rem',
-};
-const inputStyle = {
-  padding: '0.5rem',
-  marginBottom: '0.5rem',
-  borderRadius: '4px',
-  border: '1px solid #ccc'
-};
-const textareaStyle = {
-  padding: '0.5rem',
-  marginBottom: '0.5rem',
-  minHeight: '80px',
-  borderRadius: '4px',
-  border: '1px solid #ccc'
-};
-const buttonStyle = {
-  padding: '0.5rem',
-  backgroundColor: '#007bff',
-  color: 'white',
-  border: 'none',
-  borderRadius: '4px',
-};
-
 export default JournalEntryForm;
+
 
 
