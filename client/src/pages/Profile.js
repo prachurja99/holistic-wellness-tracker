@@ -8,7 +8,7 @@ function Profile({ onProfileUpdate }) {
   const [preview, setPreview] = useState('');
 
   useEffect(() => {
-    async function loadProfile() {
+    async function fetchData() {
       const data = await getUserProfile(token);
       if (data) {
         setForm({
@@ -20,11 +20,11 @@ function Profile({ onProfileUpdate }) {
         setPreview(data.profileImage || '');
       }
     }
-    loadProfile();
+    fetchData();
   }, [token]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleFileChange = (e) => {
@@ -41,7 +41,9 @@ function Profile({ onProfileUpdate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Submitting profile update:', form);
     const data = await updateUserProfile(token, form);
+    console.log('Profile update response:', data);
     if (data?.success) {
       setMessage('Profile updated successfully!');
       const freshProfile = await getUserProfile(token);
@@ -52,10 +54,8 @@ function Profile({ onProfileUpdate }) {
         profileImage: freshProfile.profileImage || ''
       });
       setPreview(freshProfile.profileImage || '');
-      localStorage.setItem('userProfile', JSON.stringify(freshProfile));
-      if (typeof onProfileUpdate === 'function') {
-        onProfileUpdate(freshProfile);
-      }
+      if (typeof onProfileUpdate === 'function') onProfileUpdate(freshProfile);
+      // IMPORTANT: Do NOT store full profile with base64 image in localStorage here!
     } else {
       setMessage(data?.message || 'Profile update failed');
     }
@@ -91,6 +91,9 @@ function Profile({ onProfileUpdate }) {
 }
 
 export default Profile;
+
+
+
 
 
 

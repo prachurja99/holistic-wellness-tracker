@@ -9,7 +9,7 @@ const Navbar = ({ user, onLogout }) => {
 
   const handleLogout = () => {
     localStorage.clear();
-    if (onLogout) onLogout();
+    if (onLogout) onLogout(); // Call provided logout handler to clear state in parent App
     navigate('/login', { replace: true });
   };
 
@@ -115,6 +115,7 @@ const Navbar = ({ user, onLogout }) => {
 };
 
 export default Navbar;
+
 
 
 

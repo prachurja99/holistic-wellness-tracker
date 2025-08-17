@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -16,76 +16,76 @@ import Navbar from './components/Navbar';
 import { isTokenValid } from './utils/auth';
 import { getUserProfile } from './api/auth';
 
-const AppLayout = ({ children, user }) => {
+const AppLayout = ({ children, user, onLogout }) => {
   const location = useLocation();
   const hideNavbarPaths = ['/login', '/register'];
   const hideNavbar = hideNavbarPaths.includes(location.pathname);
-
   return (
     <>
-      {!hideNavbar && <Navbar user={user} />}
+      {!hideNavbar && <Navbar user={user} onLogout={onLogout} />}
       {children}
     </>
   );
 };
 
 function App() {
-  const token = localStorage.getItem('token');
-  const isLoggedIn = isTokenValid(token);
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const navigate = useNavigate();
 
-  // Global user state for all components
-  const [user, setUser] = useState(() => {
-    const savedProfile = localStorage.getItem('userProfile');
-    return savedProfile ? JSON.parse(savedProfile) : {};
-  });
-
-  // Loads profile when app starts or token changes
+  // When token changes, fetch latest profile
   useEffect(() => {
-    async function fetchProfile() {
-      if (token) {
-        try {
-          const profile = await getUserProfile(token);
-          if (profile) {
-            setUser(profile);
-            localStorage.setItem('userProfile', JSON.stringify(profile));
-          }
-        } catch (error) {
-          console.error('Error loading profile:', error);
-        }
-      }
+    if (token) {
+      getUserProfile(token).then((profile) => setUser(profile || null));
+    } else {
+      setUser(null);
     }
-    fetchProfile();
   }, [token]);
 
-  // Updates state and localStorage after profile change
-  const handleProfileUpdate = (updatedUser) => {
-    setUser(updatedUser);
-    localStorage.setItem('userProfile', JSON.stringify(updatedUser));
+  // This function is called by Navbar or wherever you want to log out
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setToken('');
+    setUser(null);
+    navigate('/login');
   };
 
+  // To be called by Login/Register on successful login
+  const handleLogin = (jwtToken) => {
+    localStorage.setItem('token', jwtToken);
+    setToken(jwtToken);
+    // The effect above will fetch the profile automatically
+  };
+
+  // Called by Profile after update
+  const handleProfileUpdate = (updatedUser) => setUser(updatedUser);
+
+  const isLoggedIn = isTokenValid(token);
+
   return (
-    <Router>
-      <AppLayout user={user}>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route element={<PrivateRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/habit-tracker" element={<HabitTracker />} />
-            <Route path="/mood-tracker" element={<MoodTracker />} />
-            <Route path="/journal" element={<Journal />} />
-            <Route path="/goals" element={<GoalTracker />} />
-            <Route path="/profile" element={<Profile onProfileUpdate={handleProfileUpdate} />} />
-          </Route>
-          <Route path="/" element={isLoggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </AppLayout>
-    </Router>
+    <AppLayout user={user} onLogout={handleLogout}>
+      <Routes>
+        <Route path="/login" element={<Login onLogin={handleLogin} />} />
+        <Route path="/register" element={<Register onLogin={handleLogin} />} />
+        <Route element={<PrivateRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/habit-tracker" element={<HabitTracker />} />
+          <Route path="/mood-tracker" element={<MoodTracker />} />
+          <Route path="/journal" element={<Journal />} />
+          <Route path="/goals" element={<GoalTracker />} />
+          <Route path="/profile" element={<Profile onProfileUpdate={handleProfileUpdate} />} />
+        </Route>
+        <Route path="/" element={isLoggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AppLayout>
   );
 }
 
 export default App;
+
+
+
 
 
 

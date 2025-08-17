@@ -2,53 +2,34 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true, minlength: 2, maxlength: 50 },
-  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-  password: { type: String, required: true, minlength: 6 },
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
   about: { type: String, default: '' },
-  profileImage: { type: String, default: '' }, // Store Base64 image string or URL
-
-  preferences: {
-    dailyGoal: { type: Number, default: 3 },
-    reminderTime: { type: String, default: '09:00' },
-    theme: { type: String, enum: ['light', 'dark'], default: 'light' }
-  },
-
-  stats: {
-    totalHabits: { type: Number, default: 0 },
-    currentStreak: { type: Number, default: 0 },
-    longestStreak: { type: Number, default: 0 },
-    journalEntries: { type: Number, default: 0 }
-  },
-
-  isActive: { type: Boolean, default: true },
-  createdAt: { type: Date, default: Date.now },
-  lastLogin: { type: Date, default: Date.now }
+  profileImage: { type: String, default: '' }
 });
 
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
-  const salt = await bcrypt.genSalt(12);
-  this.password = await bcrypt.hash(this.password, salt);
+  this.password = await bcrypt.hash(this.password, 12);
   next();
 });
 
-userSchema.methods.comparePassword = async function (candidatePassword) {
+userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
-
-userSchema.methods.updateLastLogin = function () {
-  this.lastLogin = new Date();
-  return this.save();
-};
-
-userSchema.statics.findByEmail = function (email) {
+// Add this after userSchema definition:
+userSchema.statics.findByEmail = function(email) {
   return this.findOne({ email: email.toLowerCase() });
 };
+userSchema.methods.updateLastLogin = async function() {
+  this.lastLogin = new Date();
+  await this.save();
+};
 
-const User = mongoose.model('User', userSchema);
 
-module.exports = User;
+module.exports = mongoose.model('User', userSchema);
+
 
 
 

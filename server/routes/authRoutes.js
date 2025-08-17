@@ -3,28 +3,21 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { protect } = require('../middleware/authMiddleware');
 
-const router = express.Router();
+const router = express.Router(); // Initialize router here
 
-// Helper: generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
 
-/**
- * @route   POST /api/auth/register
- * @desc    Register new user
- */
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-    // Check if user exists
     const exists = await User.findByEmail(email);
     if (exists) {
       return res.status(400).json({ success: false, message: 'Email already registered' });
     }
 
-    // Create new user - password hashing handled by pre-save hook
     const user = await User.create({ name, email, password });
 
     res.status(201).json({
@@ -38,10 +31,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-/**
- * @route   POST /api/auth/login
- * @desc    Login user & return token
- */
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -61,7 +50,13 @@ router.post('/login', async (req, res) => {
     res.json({
       success: true,
       token: generateToken(user._id),
-      user: { id: user._id, name: user.name, email: user.email },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        about: user.about,
+        profileImage: user.profileImage
+      },
       message: 'Login successful'
     });
   } catch (err) {
@@ -70,39 +65,37 @@ router.post('/login', async (req, res) => {
   }
 });
 
-/**
- * @route   GET /api/auth/profile
- * @desc    Get logged-in user's profile
- */
 router.get('/profile', protect, async (req, res) => {
-  res.json(req.user);
+  res.json({
+    id: req.user._id,
+    name: req.user.name,
+    email: req.user.email,
+    about: req.user.about,
+    profileImage: req.user.profileImage
+  });
 });
 
-/**
- * @route   PUT /api/auth/profile
- * @desc    Update logged-in user's profile
- */
 router.put('/profile', protect, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
-
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
+    const user = req.user;
 
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
+    if (typeof req.body.about !== 'undefined') user.about = req.body.about;
+    if (typeof req.body.profileImage !== 'undefined') user.profileImage = req.body.profileImage;
+    if (req.body.password) user.password = req.body.password;
 
-    // If password provided, will be hashed by pre-save hook
-    if (req.body.password) {
-      user.password = req.body.password;
-    }
-
-    const updatedUser = await user.save();
+    await user.save();
 
     res.json({
       success: true,
-      user: { id: updatedUser._id, name: updatedUser.name, email: updatedUser.email },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        about: user.about,
+        profileImage: user.profileImage
+      },
       message: 'Profile updated successfully'
     });
   } catch (err) {
@@ -112,3 +105,5 @@ router.put('/profile', protect, async (req, res) => {
 });
 
 module.exports = router;
+
+

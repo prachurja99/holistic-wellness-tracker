@@ -4,7 +4,7 @@ import { loginUser } from '../api/auth';
 import logo from '../assets/470-project-logo.png';
 import '../styles/Auth.css';
 
-export default function Login() {
+export default function Login({ onLogin }) {
   const [form, setForm] = useState({ email: '', password: '' });
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ export default function Login() {
     if (data?.token && data?.user) {
       setMessage('Login successful!');
       localStorage.setItem('token', data.token);
-      localStorage.setItem('userProfile', JSON.stringify(data.user));
+      if (onLogin) onLogin(data.token);  // Notify App to update user state
       navigate('/dashboard');
     } else {
       setMessage(data?.message || 'Login failed');
@@ -64,6 +64,7 @@ export default function Login() {
     </div>
   );
 }
+
 
 
 

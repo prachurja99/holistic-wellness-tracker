@@ -4,8 +4,8 @@ import { registerUser } from '../api/auth';
 import logo from '../assets/470-project-logo.png';
 import '../styles/Auth.css';
 
-export default function Register() {
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+export default function Register({ onLogin }) {
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
@@ -15,12 +15,18 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = await registerUser(form);
-    if (data?.success) {
-      setMessage('Registration successful! You can now login.');
-      navigate('/login');
+    if (form.password !== form.confirmPassword) {
+      setMessage("Passwords do not match.");
+      return;
+    }
+    const data = await registerUser({ name: form.name, email: form.email, password: form.password });
+    if (data?.token && data?.user) {
+      setMessage('Registration successful!');
+      localStorage.setItem('token', data.token);
+      if (onLogin) onLogin(data.token); // Notify App to update user state
+      navigate('/dashboard');
     } else {
-      setMessage(data?.message || 'Registration failed');
+      setMessage(data?.message || 'Registration failed.');
     }
   };
 
@@ -32,11 +38,12 @@ export default function Register() {
           alt="Wellnesstic Logo"
           style={{ height: 54, marginBottom: 24, display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
         />
-        <h2>Create Account</h2>
+        <h2>Register</h2>
         <form onSubmit={handleSubmit}>
           <input
             name="name"
-            placeholder="Full Name"
+            type="text"
+            placeholder="Name"
             value={form.name}
             onChange={handleChange}
             className="auth-input"
@@ -60,16 +67,27 @@ export default function Register() {
             className="auth-input"
             required
           />
+          <input
+            name="confirmPassword"
+            type="password"
+            placeholder="Confirm Password"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            className="auth-input"
+            required
+          />
           {message && <div className="auth-message">{message}</div>}
           <button type="submit" className="auth-btn">Register</button>
         </form>
         <div className="auth-alt">
-          Already have an account? <Link to="/login">Login here</Link>
+          Already have an account? <Link to="/login">Sign in</Link>
         </div>
       </div>
     </div>
   );
 }
+
+
 
 
 
