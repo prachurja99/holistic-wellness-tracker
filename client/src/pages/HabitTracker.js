@@ -1,65 +1,63 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HabitForm from '../components/HabitForm';
 import HabitList from '../components/HabitList';
 import { fetchHabits, addHabit, deleteHabit, toggleCompletion } from '../api/habits';
 import '../styles/HabitTracker.css';
 
-const HabitTracker = () => {
-  const [habits, setHabits] = useState([]);
+const HabitTracker = ({ habits, setHabits }) => {
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem('token');
 
   useEffect(() => {
     const loadHabits = async () => {
       if (token) {
-        setLoading(true);
         const res = await fetchHabits(token);
-        setLoading(false);
-        if (res.success) {
-          setHabits(res.habits);
-          localStorage.setItem('habits', JSON.stringify(res.habits));
-        } else {
-          console.warn('Habit fetch failed, using local cache');
-          const stored = localStorage.getItem('habits');
-          if (stored) setHabits(JSON.parse(stored));
-        }
+        if (res.success) setHabits(res.habits);
       } else {
         const stored = localStorage.getItem('habits');
         if (stored) setHabits(JSON.parse(stored));
       }
     };
     loadHabits();
-  }, [token]);
+  }, [token, setHabits]);
 
-  useEffect(() => {
-    localStorage.setItem('habits', JSON.stringify(habits));
-  }, [habits]);
+  const reloadHabits = async () => {
+    if (token) {
+      const res = await fetchHabits(token);
+      if (res.success) setHabits(res.habits);
+    }
+  };
 
   const handleAddHabit = async (habit) => {
     if (token) {
+      setLoading(true);
       const res = await addHabit(habit, token);
-      if (res.success) setHabits((prev) => [res.habit, ...prev]);
+      setLoading(false);
+      if (res.success) await reloadHabits();
     } else {
       const localHabit = { id: Date.now(), ...habit };
       setHabits((prev) => [localHabit, ...prev]);
+      localStorage.setItem('habits', JSON.stringify([localHabit, ...habits]));
     }
   };
 
   const handleDeleteHabit = async (id) => {
     if (token) {
+      setLoading(true);
       const res = await deleteHabit(id, token);
-      if (res.success) setHabits((prev) => prev.filter((h) => h._id !== id && h.id !== id));
+      setLoading(false);
+      if (res.success) await reloadHabits();
     } else {
-      setHabits((prev) => prev.filter((h) => h.id !== id));
+      const updated = habits.filter((h) => h.id !== id);
+      setHabits(updated);
+      localStorage.setItem('habits', JSON.stringify(updated));
     }
   };
 
   const handleToggleComplete = async (id, date) => {
     if (token) {
       const res = await toggleCompletion(id, date, token);
-      if (res.success) {
-        setHabits((prev) => prev.map((h) => (h._id === id ? res.habit : h)));
-      }
+      if (res.success) await reloadHabits();
     } else {
       setHabits((prev) =>
         prev.map((habit) => {
@@ -74,6 +72,7 @@ const HabitTracker = () => {
           return habit;
         })
       );
+      localStorage.setItem('habits', JSON.stringify(habits));
     }
   };
 
@@ -87,11 +86,7 @@ const HabitTracker = () => {
         <p className="loading-text">Loading habits...</p>
       ) : (
         <div className="card">
-          <HabitList
-            habits={habits}
-            onDelete={handleDeleteHabit}
-            onToggleComplete={handleToggleComplete}
-          />
+          <HabitList habits={habits} onDelete={handleDeleteHabit} onToggleComplete={handleToggleComplete} />
         </div>
       )}
     </div>
@@ -99,6 +94,12 @@ const HabitTracker = () => {
 };
 
 export default HabitTracker;
+
+
+
+
+
+
 
 
 

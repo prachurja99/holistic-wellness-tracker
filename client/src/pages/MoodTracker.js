@@ -1,35 +1,53 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import MoodEntryForm from '../components/MoodEntryForm';
 import MoodHistory from '../components/MoodHistory';
 import MoodTrendsChart from '../components/MoodTrendsChart';
+import { fetchMoods, createMood, deleteMoodApi } from '../api/moods';
 import '../styles/MoodTracker.css';
 
-const MOOD_ENTRIES_KEY = 'moodEntries';
-
-const MoodTracker = () => {
-  const [moodEntries, setMoodEntries] = useState(() => {
-    // Always initialize from localStorage!
-    try {
-      const stored = localStorage.getItem(MOOD_ENTRIES_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
+const MoodTracker = ({ moods, setMoods }) => {
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    localStorage.setItem(MOOD_ENTRIES_KEY, JSON.stringify(moodEntries));
-  }, [moodEntries]);
+    const loadMoods = async () => {
+      if (token) {
+        const res = await fetchMoods(token);
+        if (res.success) setMoods(res.moods);
+      } else {
+        const stored = localStorage.getItem('moods');
+        if (stored) setMoods(JSON.parse(stored));
+      }
+    };
+    loadMoods();
+  }, [token, setMoods]);
 
-  const handleAddMood = (entry) => {
-    const id = entry.id || entry._id || Date.now();
-    setMoodEntries([{ ...entry, id }, ...moodEntries]);
+  const reloadMoods = async () => {
+    if (token) {
+      const res = await fetchMoods(token);
+      if (res.success) setMoods(res.moods);
+    }
   };
 
-  const handleDeleteMood = (id) => {
-    const updated = moodEntries.filter((entry) => (entry.id || entry._id) !== id);
-    setMoodEntries(updated);
+  const handleAddMood = async (entry) => {
+    if (token) {
+      const res = await createMood(entry, token);
+      if (res.success) await reloadMoods();
+    } else {
+      const localMood = { id: Date.now(), ...entry };
+      setMoods((prev) => [localMood, ...prev]);
+      localStorage.setItem('moods', JSON.stringify([localMood, ...moods]));
+    }
+  };
+
+  const handleDeleteMood = async (id) => {
+    if (token) {
+      const res = await deleteMoodApi(id, token);
+      if (res.success) await reloadMoods();
+    } else {
+      const updated = moods.filter((m) => m.id !== id);
+      setMoods(updated);
+      localStorage.setItem('moods', JSON.stringify(updated));
+    }
   };
 
   return (
@@ -38,14 +56,12 @@ const MoodTracker = () => {
       <div className="card">
         <MoodEntryForm onAddMood={handleAddMood} />
       </div>
-      <MoodHistory moodEntries={moodEntries} onDelete={handleDeleteMood} />
+      <MoodHistory moodEntries={moods} onDelete={handleDeleteMood} />
       <div className="card" style={{ marginTop: '2rem' }}>
-        {moodEntries.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#ad6842' }}>
-            No mood data to display yet.
-          </p>
+        {moods.length === 0 ? (
+          <p style={{ textAlign: 'center', color: '#ad6842' }}>No mood data to display yet.</p>
         ) : (
-          <MoodTrendsChart moodEntries={moodEntries} />
+          <MoodTrendsChart moodEntries={moods} />
         )}
       </div>
     </div>
@@ -53,6 +69,12 @@ const MoodTracker = () => {
 };
 
 export default MoodTracker;
+
+
+
+
+
+
 
 
 

@@ -1,61 +1,52 @@
-import React, { useEffect, useState } from 'react';
-import { fetchJournals, addJournal, updateJournal, deleteJournal } from '../api/journal';
+import React, { useEffect } from 'react';
 import JournalEntryForm from '../components/JournalEntryForm';
 import JournalEntriesList from '../components/JournalEntriesList';
-import '../styles/Journal.css';  // Import new CSS
+import { fetchJournals, addJournal, deleteJournal, updateJournal } from '../api/journal';
+import '../styles/Journal.css';
 
-const Journal = () => {
-  const [entries, setEntries] = useState([]);
-  const [loading, setLoading] = useState(false);
+const Journal = ({ journals, setJournals }) => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadJournals = async () => {
       if (token) {
-        setLoading(true);
         const res = await fetchJournals(token);
-        setLoading(false);
-        if (res.success) {
-          setEntries(res.journals);
-          localStorage.setItem('journalEntries', JSON.stringify(res.journals));
-        } else {
-          console.warn('Backend fetch failed, using localStorage fallback');
-          const stored = localStorage.getItem('journalEntries');
-          if (stored) setEntries(JSON.parse(stored));
-        }
+        if (res.success) setJournals(res.journals);
       } else {
-        const stored = localStorage.getItem('journalEntries');
-        if (stored) setEntries(JSON.parse(stored));
+        const stored = localStorage.getItem('journals');
+        if (stored) setJournals(JSON.parse(stored));
       }
     };
-    loadData();
-  }, [token]);
+    loadJournals();
+  }, [token, setJournals]);
 
-  useEffect(() => {
-    localStorage.setItem('journalEntries', JSON.stringify(entries));
-  }, [entries]);
+  const reloadJournals = async () => {
+    if (token) {
+      const res = await fetchJournals(token);
+      if (res.success) setJournals(res.journals);
+    }
+  };
 
   const handleAddEntry = async (newEntry) => {
     const entryWithDate = { ...newEntry, date: new Date().toISOString() };
     if (token) {
       const res = await addJournal(entryWithDate, token);
-      if (res.success) {
-        setEntries((prev) => [res.journal, ...prev]);
-      }
+      if (res.success) await reloadJournals();
     } else {
       const localEntry = { id: Date.now(), ...entryWithDate };
-      setEntries((prev) => [localEntry, ...prev]);
+      setJournals((prev) => [localEntry, ...prev]);
+      localStorage.setItem('journals', JSON.stringify([localEntry, ...journals]));
     }
   };
 
   const handleDeleteEntry = async (id) => {
     if (token) {
       const res = await deleteJournal(id, token);
-      if (res.success) {
-        setEntries((prev) => prev.filter((entry) => (entry._id || entry.id) !== id));
-      }
+      if (res.success) await reloadJournals();
     } else {
-      setEntries((prev) => prev.filter((entry) => (entry.id) !== id));
+      const updated = journals.filter((entry) => entry.id !== id);
+      setJournals(updated);
+      localStorage.setItem('journals', JSON.stringify(updated));
     }
   };
 
@@ -63,44 +54,32 @@ const Journal = () => {
     const updatedEntry = { ...updatedData, date: new Date().toISOString() };
     if (token) {
       const res = await updateJournal(id, updatedEntry, token);
-      if (res.success) {
-        setEntries((prev) =>
-          prev.map((entry) =>
-            (entry._id || entry.id) === id ? res.journal : entry
-          )
-        );
-      }
+      if (res.success) await reloadJournals();
     } else {
-      setEntries((prev) =>
-        prev.map((entry) =>
-          (entry._id || entry.id) === id ? { ...entry, ...updatedEntry } : entry
-        )
+      const updated = journals.map((entry) =>
+        entry.id === id ? { ...entry, ...updatedEntry } : entry
       );
+      setJournals(updated);
+      localStorage.setItem('journals', JSON.stringify(updated));
     }
   };
 
   return (
     <div className="container journal-container">
       <h2>Journal</h2>
-
       <div className="card">
         <JournalEntryForm onAddEntry={handleAddEntry} />
       </div>
-
-      {loading ? (
-        <p className="loading-text">Loading journal entries...</p>
-      ) : (
-        <JournalEntriesList
-          entries={entries}
-          onDelete={handleDeleteEntry}
-          onEdit={handleEditEntry}
-        />
-      )}
+      <JournalEntriesList entries={journals} onDelete={handleDeleteEntry} onEdit={handleEditEntry} />
     </div>
   );
 };
 
 export default Journal;
+
+
+
+
 
 
 

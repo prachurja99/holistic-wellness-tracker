@@ -9,6 +9,7 @@ import {
   fetchGoalStats,
 } from '../api/goals';
 import GoalCompletionChart from '../components/GoalCompletionChart';
+import ReminderForm from '../components/ReminderForm';
 import '../styles/GoalTracker.css';
 
 const formatDate = (date) => {
@@ -18,39 +19,56 @@ const formatDate = (date) => {
   return `${y}-${m}-${d}`;
 };
 
-function GoalTracker() {
+function GoalTracker({ goals, setGoals, reminders, setReminders }) {
   const token = localStorage.getItem('token');
-  const [goals, setGoals] = useState([]);
   const [finishedGoals, setFinishedGoals] = useState([]);
   const [viewType, setViewType] = useState('daily');
   const [newGoal, setNewGoal] = useState({ title: '', goalType: 'daily' });
   const [stats, setStats] = useState({ total: 0, finished: 0, unfinished: 0 });
   const currentDate = formatDate(new Date());
 
-  // Fetch goals and stats based on current viewType
+  // Fetch goals, stats, and reminders
   const loadGoalsAndStats = async () => {
     if (!token) return;
+    try {
+      if (viewType === 'finished') {
+        const results = await Promise.all(
+          ['daily', 'weekly', 'monthly', 'yearly'].map((type) =>
+            fetchFinishedGoals(token, type, currentDate)
+          )
+        );
+        const combined = results
+          .filter((res) => res.success && Array.isArray(res.goals))
+          .flatMap((res) => res.goals);
+        setFinishedGoals(combined);
+        setStats({ total: 0, finished: 0, unfinished: 0 });
+      } else {
+        const activeRes = await fetchGoals(token, viewType, currentDate);
+        if (activeRes.success) setGoals(activeRes.goals);
+        const statsRes = await fetchGoalStats(viewType, currentDate, token);
+        if (statsRes.success)
+          setStats({
+            total: statsRes.total,
+            finished: statsRes.finished,
+            unfinished: statsRes.unfinished,
+          });
+      }
 
-    if (viewType === 'finished') {
-      const results = await Promise.all(['daily', 'weekly', 'monthly', 'yearly'].map(type =>
-        fetchFinishedGoals(token, type, currentDate)
-      ));
-      const combined = results
-        .filter(res => res.success && Array.isArray(res.goals))
-        .flatMap(res => res.goals);
-      setFinishedGoals(combined);
-      setStats({ total: 0, finished: 0, unfinished: 0 });
-    } else {
-      const activeRes = await fetchGoals(token, viewType, currentDate);
-      if (activeRes.success) setGoals(activeRes.goals);
-      const statsRes = await fetchGoalStats(viewType, currentDate, token);
-      if (statsRes.success) setStats({ total: statsRes.total, finished: statsRes.finished, unfinished: statsRes.unfinished });
+      // Fetch reminders
+      const res = await fetch('/api/reminders', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) setReminders(data.reminders);
+    } catch (error) {
+      console.error('Error loading data:', error);
     }
   };
 
   useEffect(() => {
     loadGoalsAndStats();
     setNewGoal({ title: '', goalType: viewType });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewType, token, currentDate]);
 
   const handleAdd = async () => {
@@ -80,12 +98,43 @@ function GoalTracker() {
     await loadGoalsAndStats();
   };
 
+  // Add reminder linked to this goal
+  const handleCreateReminder = async (goalId, reminderData) => {
+    try {
+      const payload = {
+        ...reminderData,
+        type: 'goal',
+        goalId,
+      };
+      const res = await fetch('/api/reminders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setReminders((prev) => [data.reminder, ...prev]);
+        alert('Reminder set!');
+      } else {
+        alert('Failed to create reminder');
+      }
+    } catch (error) {
+      console.error('Failed to create reminder:', error);
+    }
+  };
+
+  // Show reminders for this goal with safety check
+  const remindersForGoal = (goalId) => (reminders || []).filter((r) => r.goalId === goalId);
+
   const displayedGoals = viewType === 'finished' ? finishedGoals : goals;
 
   return (
     <div className="goaltracker-wrapper-full">
       <aside className="goaltracker-sidebar-full">
-        {['daily', 'weekly', 'monthly', 'yearly', 'finished'].map(type => (
+        {['daily', 'weekly', 'monthly', 'yearly', 'finished'].map((type) => (
           <button
             key={type}
             className={viewType === type ? 'goaltracker-sidebar-btn active' : 'goaltracker-sidebar-btn'}
@@ -98,23 +147,25 @@ function GoalTracker() {
       <main className="goaltracker-main-full">
         <h2>{viewType === 'finished' ? 'Finished Tasks' : `${viewType.charAt(0).toUpperCase() + viewType.slice(1)} Goals`}</h2>
         {viewType !== 'finished' && (
-          <div className="goaltracker-add">
-            <input
-              type="text"
-              placeholder="Goal title"
-              value={newGoal.title}
-              onChange={e => setNewGoal({ ...newGoal, title: e.target.value })}
-              className="goaltracker-input"
-            />
-            <button onClick={handleAdd} className="goaltracker-btn-add">Add Goal</button>
-          </div>
-        )}
-        {viewType !== 'finished' && (
-          <GoalCompletionChart goalType={viewType} date={currentDate} token={token} />
+          <>
+            <div className="goaltracker-add">
+              <input
+                type="text"
+                placeholder="Goal title"
+                value={newGoal.title}
+                onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })}
+                className="goaltracker-input"
+              />
+              <button onClick={handleAdd} className="goaltracker-btn-add">
+                Add Goal
+              </button>
+            </div>
+            <GoalCompletionChart goalType={viewType} date={currentDate} token={token} />
+          </>
         )}
         <ul className="goaltracker-list">
           {displayedGoals.length > 0 ? (
-            displayedGoals.map(g => (
+            displayedGoals.map((g) => (
               <li key={g._id} className="goaltracker-item">
                 <label className="goaltracker-label">
                   <input
@@ -127,14 +178,27 @@ function GoalTracker() {
                   <strong>{g.title}</strong> ({g.goalType})
                 </label>
                 {viewType !== 'finished' && (
-                  <button
-                    onClick={() => handleDelete(g._id)}
-                    className="goaltracker-btn-delete"
-                    aria-label="Delete goal"
-                  >
+                  <button onClick={() => handleDelete(g._id)} className="goaltracker-btn-delete" aria-label="Delete goal">
                     ×
                   </button>
                 )}
+                {/* Reminder Form specific to this goal with date/repeat */}
+                {viewType !== 'finished' && (
+                  <ReminderForm
+                    onCreate={(reminderData) => handleCreateReminder(g._id, reminderData)}
+                    initialTitle={g.title}
+                  />
+                )}
+                {/* List reminders for this goal, show date or repeat info */}
+                <ul className="goaltracker-reminders-list">
+                  {remindersForGoal(g._id).map((rem) => (
+                    <li key={rem._id}>
+                      🔔 {rem.repeat
+                        ? `Repeats on ${rem.days.join(', ')} at ${rem.time}`
+                        : `On ${rem.date} at ${rem.time}`}
+                    </li>
+                  ))}
+                </ul>
               </li>
             ))
           ) : (
@@ -147,6 +211,10 @@ function GoalTracker() {
 }
 
 export default GoalTracker;
+
+
+
+
 
 
 
