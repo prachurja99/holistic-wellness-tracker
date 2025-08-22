@@ -1,5 +1,5 @@
 :root {
-  /* Your existing vars */
+  /* Default / Light theme vars */
   --color-bg: #f9fafb;
   --color-primary: #657786;
   --color-primary-light: #a1b8cc;
@@ -11,17 +11,19 @@
   --font-family: 'Montserrat', sans-serif;
 }
 
-/* Dark Theme */
+/* Dark Theme with Shaded Purple Palette */
 [data-theme="dark"] {
-  --color-bg: #181a20;
-  --color-primary: #00adb5;
-  --color-primary-light: #33c2d9;
-  --color-accent: #00b894;
-  --color-text-primary: #e8e8e8;
-  --color-text-secondary: #abb4bd;
-  --color-card-bg: #2a2c36;
-  --color-border: #3a3c44;
+  --color-bg: #2b1e3f;             /* Rich deep purple background */
+  --color-primary: #7e57c2;        /* Medium purple accent */
+  --color-primary-light: #9575cd;  /* Light lavender */
+  --color-accent: #512da8;         /* Darker purple accent */
+  --color-text-primary: #e0dff4;   /* Soft pale lavender text */
+  --color-text-secondary: #b3a7d1; /* Muted lavender-gray */
+  --color-card-bg: #3a2f51;        /* Slightly lighter purple for cards */
+  --color-border: #6d5b8a;         /* Medium purple border */
 }
+
+
 
 /* Sepia / Warm */
 [data-theme="sepia"] {
@@ -47,17 +49,18 @@
   --color-border: #66bbb0;
 }
 
-/* Vivid / High Contrast */
+/* Vivid / Soothing Shaded Green Palette */
 [data-theme="vivid"] {
-  --color-bg: #fff200;
-  --color-primary: #e60026;
-  --color-primary-light: #ff4040;
-  --color-accent: #b30018;
-  --color-text-primary: #111111;
-  --color-text-secondary: #333333;
-  --color-card-bg: #fff850;
-  --color-border: #e6e61a;
+  --color-bg: #e7f5e9;             /* Soft minty green background */
+  --color-primary: #4caf50;        /* Medium fresh green */
+  --color-primary-light: #81c784;  /* Light green accent */
+  --color-accent: #388e3c;         /* Dark forest green accent */
+  --color-text-primary: #1b3a24;   /* Deep green text */
+  --color-text-secondary: #4a6b45; /* Muted green-gray */
+  --color-card-bg: #f1faee;        /* Very light greenish-white cards */
+  --color-border: #a5d6a7;         /* Light pastel green border */
 }
+
 
 /* Apply variables to your existing selectors */
 
@@ -118,7 +121,7 @@ textarea {
 }
 
 .card:hover {
-  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
 }
 
 /* Responsive Utilities */
@@ -127,4 +130,7 @@ textarea {
     padding: 1rem;
   }
 }
+
+
+
 

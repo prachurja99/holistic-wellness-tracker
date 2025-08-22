@@ -19,8 +19,7 @@ const formatDate = (date) => {
   return `${y}-${m}-${d}`;
 };
 
-function GoalTracker({ goals, setGoals, reminders, setReminders }) {
-  const token = localStorage.getItem('token');
+function GoalTracker({ goals, setGoals, reminders, setReminders, theme, token }) {
   const [finishedGoals, setFinishedGoals] = useState([]);
   const [viewType, setViewType] = useState('daily');
   const [newGoal, setNewGoal] = useState({ title: '', goalType: 'daily' });
@@ -54,7 +53,6 @@ function GoalTracker({ goals, setGoals, reminders, setReminders }) {
           });
       }
 
-      // Fetch reminders
       const res = await fetch('/api/reminders', {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -98,7 +96,6 @@ function GoalTracker({ goals, setGoals, reminders, setReminders }) {
     await loadGoalsAndStats();
   };
 
-  // Add reminder linked to this goal
   const handleCreateReminder = async (goalId, reminderData) => {
     try {
       const payload = {
@@ -126,7 +123,6 @@ function GoalTracker({ goals, setGoals, reminders, setReminders }) {
     }
   };
 
-  // Show reminders for this goal with safety check
   const remindersForGoal = (goalId) => (reminders || []).filter((r) => r.goalId === goalId);
 
   const displayedGoals = viewType === 'finished' ? finishedGoals : goals;
@@ -156,11 +152,9 @@ function GoalTracker({ goals, setGoals, reminders, setReminders }) {
                 onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })}
                 className="goaltracker-input"
               />
-              <button onClick={handleAdd} className="goaltracker-btn-add">
-                Add Goal
-              </button>
+              <button onClick={handleAdd} className="goaltracker-btn-add">Add Goal</button>
             </div>
-            <GoalCompletionChart goalType={viewType} date={currentDate} token={token} />
+            <GoalCompletionChart goalType={viewType} date={currentDate} token={token} theme={theme} />
           </>
         )}
         <ul className="goaltracker-list">
@@ -182,14 +176,9 @@ function GoalTracker({ goals, setGoals, reminders, setReminders }) {
                     ×
                   </button>
                 )}
-                {/* Reminder Form specific to this goal with date/repeat */}
                 {viewType !== 'finished' && (
-                  <ReminderForm
-                    onCreate={(reminderData) => handleCreateReminder(g._id, reminderData)}
-                    initialTitle={g.title}
-                  />
+                  <ReminderForm onCreate={(reminderData) => handleCreateReminder(g._id, reminderData)} initialTitle={g.title} />
                 )}
-                {/* List reminders for this goal, show date or repeat info */}
                 <ul className="goaltracker-reminders-list">
                   {remindersForGoal(g._id).map((rem) => (
                     <li key={rem._id}>
@@ -211,6 +200,7 @@ function GoalTracker({ goals, setGoals, reminders, setReminders }) {
 }
 
 export default GoalTracker;
+
 
 
 

@@ -17,15 +17,19 @@ export default function ThemeSelector({ theme, setTheme }) {
           onClick={() => setTheme(t.id)}
           style={{
             fontWeight: t.id === theme ? 'bold' : 'normal',
-            padding: '6px 12px',
-            borderRadius: 4,
+            padding: '6px 14px',
+            borderRadius: 6,
             cursor: 'pointer',
-            border: t.id === theme ? '2px solid var(--primary)' : '1px solid #ccc',
-            backgroundColor: t.id === theme ? 'var(--primary)' : 'transparent',
-            color: t.id === theme ? 'white' : 'var(--text)',
-            transition: 'all 0.2s ease',
+            border: t.id === theme ? '2px solid var(--color-primary)' : '1px solid #ccc',
+            backgroundColor: t.id === theme ? 'var(--color-primary)' : 'transparent',
+            color: t.id === theme ? 'white' : 'var(--color-text-primary)',
+            transition: 'all 0.3s ease',
+            minWidth: 90,
+            textAlign: 'center',
+            boxShadow: t.id === theme ? '0 0 10px var(--color-primary-light)' : 'none',
           }}
           aria-label={`Switch to ${t.label} theme`}
+          title={t.label}
         >
           {t.label}
         </button>

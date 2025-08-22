@@ -1,13 +1,32 @@
-// client/src/components/GoalCompletionChart.js
 import React, { useEffect, useState } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { fetchGoalStats } from '../api/goals';
 
-// Register required chart.js elements
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const GoalCompletionChart = ({ goalType, date, token }) => {
+const getCssVariableOrFallback = (variable, fallback) => {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(variable);
+  return value && value.trim() ? value.trim() : fallback;
+};
+
+const themeChartColors = {
+  light: ['--color-chart-finished', '--color-chart-unfinished'],
+  dark: ['--color-chart-finished-dark', '--color-chart-unfinished-dark'],
+  sepia: ['--color-chart-finished-sepia', '--color-chart-unfinished-sepia'],
+  cool: ['--color-chart-finished-cool', '--color-chart-unfinished-cool'],
+  vivid: ['--color-chart-finished-vivid', '--color-chart-unfinished-vivid'],
+};
+
+const fallbackColors = {
+  light: ['#4a90e2', '#7b59c1'],          // Sky Blue and Purple default
+  dark: ['#7e57c2', '#d4626e'],           // Purple and muted coral
+  sepia: ['#ffca28', '#fb8c00'],           // Warm yellow and orange
+  cool: ['#64b5f6', '#ff6384'],             // Light blue and berry
+  vivid: ['#4caf50', '#388e3c'],            // Green shades
+};
+
+const GoalCompletionChart = ({ goalType, date, token, theme = 'light' }) => {
   const [stats, setStats] = useState({ finished: 0, unfinished: 0 });
 
   useEffect(() => {
@@ -20,13 +39,19 @@ const GoalCompletionChart = ({ goalType, date, token }) => {
     }
   }, [goalType, date, token]);
 
+  const [finishedVar, unfinishedVar] = themeChartColors[theme] || themeChartColors.light;
+  const [fallbackFinished, fallbackUnfinished] = fallbackColors[theme] || fallbackColors.light;
+
+  const finishedColor = getCssVariableOrFallback(finishedVar, fallbackFinished);
+  const unfinishedColor = getCssVariableOrFallback(unfinishedVar, fallbackUnfinished);
+
   const data = {
     labels: ['Finished', 'Unfinished'],
     datasets: [
       {
         data: [stats.finished, stats.unfinished],
-        backgroundColor: ['#4caf50', '#f44336'],
-        hoverBackgroundColor: ['#45a049', '#e53935'],
+        backgroundColor: [finishedColor, unfinishedColor],
+        hoverBackgroundColor: [finishedColor, unfinishedColor],
       }
     ]
   };
@@ -42,5 +67,9 @@ const GoalCompletionChart = ({ goalType, date, token }) => {
 };
 
 export default GoalCompletionChart;
+
+
+
+
 
 

@@ -1,4 +1,3 @@
-// src/components/HabitForm.js
 import React, { useState } from 'react';
 
 const categories = ['Health', 'Productivity', 'Learning', 'Fitness', 'Wellness', 'Other'];
@@ -40,7 +39,6 @@ const HabitForm = ({ onAddHabit }) => {
       customFrequency: frequency === 'Custom' ? Number(customFrequency) : null,
       goalCount: goalCount ? Number(goalCount) : null,
       createdAt: new Date().toISOString(),
-      // other fields like completion data will come later
     };
 
     onAddHabit(newHabit);
@@ -56,84 +54,89 @@ const HabitForm = ({ onAddHabit }) => {
   return (
     <form onSubmit={handleSubmit} style={{ marginBottom: '1rem' }}>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      
-      <label>
-        Habit Title:
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter habit title"
-          required
-          style={{ marginLeft: '0.5rem' }}
-        />
-      </label>
-      <br />
 
-      <label>
-        Category:
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          required
-          style={{ marginLeft: '0.5rem' }}
-        >
-          <option value="">Select category</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
-      </label>
-      <br />
-
-      <label>
-        Frequency:
-        <select
-          value={frequency}
-          onChange={(e) => setFrequency(e.target.value)}
-          required
-          style={{ marginLeft: '0.5rem' }}
-        >
-          <option value="">Select frequency</option>
-          {frequencies.map((freq) => (
-            <option key={freq} value={freq}>
-              {freq}
-            </option>
-          ))}
-        </select>
-      </label>
-      <br />
-
-      {frequency === 'Custom' && (
+      <div style={{ marginBottom: '1rem' }}>
         <label>
-          Custom Frequency (days):
+          Habit Title:
           <input
-            type="number"
-            value={customFrequency}
-            onChange={(e) => setCustomFrequency(e.target.value)}
-            min="1"
-            style={{ marginLeft: '0.5rem', width: '4rem' }}
-            placeholder="e.g. 3"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter habit title"
             required
+            style={{ marginLeft: '0.5rem' }}
           />
         </label>
-      )}
-      {frequency === 'Custom' && <br />}
+      </div>
 
-      <label>
-        Goal Count (optional):
-        <input
-          type="number"
-          value={goalCount}
-          onChange={(e) => setGoalCount(e.target.value)}
-          min="1"
-          placeholder="e.g. 8"
-          style={{ marginLeft: '0.5rem', width: '4rem' }}
-        />
-      </label>
-      <br />
+      <div style={{ marginBottom: '1rem' }}>
+        <label>
+          Category:
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+            style={{ marginLeft: '0.5rem' }}
+          >
+            <option value="">Select category</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div style={{ marginBottom: '1rem' }}>
+        <label>
+          Frequency:
+          <select
+            value={frequency}
+            onChange={(e) => setFrequency(e.target.value)}
+            required
+            style={{ marginLeft: '0.5rem' }}
+          >
+            <option value="">Select frequency</option>
+            {frequencies.map((freq) => (
+              <option key={freq} value={freq}>
+                {freq}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      {frequency === 'Custom' && (
+        <div style={{ marginBottom: '1rem' }}>
+          <label>
+            Custom Frequency (days):
+            <input
+              type="number"
+              value={customFrequency}
+              onChange={(e) => setCustomFrequency(e.target.value)}
+              min="1"
+              style={{ marginLeft: '0.5rem', width: '4rem' }}
+              placeholder="e.g. 3"
+              required
+            />
+          </label>
+        </div>
+      )}
+
+      <div style={{ marginBottom: '1rem' }}>
+        <label>
+          Goal Count (optional):
+          <input
+            type="number"
+            value={goalCount}
+            onChange={(e) => setGoalCount(e.target.value)}
+            min="1"
+            placeholder="e.g. 8"
+            style={{ marginLeft: '0.5rem', width: '4rem' }}
+          />
+        </label>
+      </div>
 
       <button type="submit" style={{ marginTop: '0.5rem' }}>
         Add Habit
@@ -143,4 +146,5 @@ const HabitForm = ({ onAddHabit }) => {
 };
 
 export default HabitForm;
+
 

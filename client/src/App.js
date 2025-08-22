@@ -174,7 +174,19 @@ function App() {
           <Route path="/habit-tracker" element={<HabitTracker habits={habits} setHabits={setHabits} />} />
           <Route path="/mood-tracker" element={<MoodTracker moods={moods} setMoods={setMoods} />} />
           <Route path="/journal" element={<Journal journals={journals} setJournals={setJournals} />} />
-          <Route path="/goals" element={<GoalTracker goals={goals} setGoals={setGoals} reminders={reminders} setReminders={setReminders} />} />
+          <Route
+            path="/goals"
+            element={
+              <GoalTracker
+                goals={goals}
+                setGoals={setGoals}
+                reminders={reminders}
+                setReminders={setReminders}
+                theme={theme}        // Pass theme here
+                token={token}        // Pass token here
+              />
+            }
+          />
           <Route path="/profile" element={<Profile user={user} onProfileUpdate={handleProfileUpdate} />} />
         </Route>
         <Route path="/" element={isLoggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
@@ -185,6 +197,7 @@ function App() {
 }
 
 export default App;
+
 
 
 
