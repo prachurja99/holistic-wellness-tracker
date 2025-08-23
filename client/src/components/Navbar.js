@@ -11,7 +11,6 @@ const Navbar = ({ user, onLogout }) => {
   const [showReminders, setShowReminders] = useState(false);
   const panelRef = useRef();
 
-  // Fetch reminders on mount
   useEffect(() => {
     if (!isLoggedIn) return;
     fetch('/api/reminders', {
@@ -23,7 +22,6 @@ const Navbar = ({ user, onLogout }) => {
       });
   }, [isLoggedIn]);
 
-  // Close reminders panel on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (panelRef.current && !panelRef.current.contains(event.target)) {
@@ -56,29 +54,12 @@ const Navbar = ({ user, onLogout }) => {
   };
 
   return (
-    <nav
-      className="navbar"
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 24px',
-        height: '64px',
-        background: '#fff',
-        position: 'relative',
-      }}
-    >
-      {/* Left: Logo */}
+    <nav className="navbar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', height: '64px', background: '#fff', position: 'relative' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
         <Link to="/dashboard">
-          <img
-            src={logo}
-            alt="Wellnesstic Logo"
-            style={{ height: '40px', verticalAlign: 'middle' }}
-          />
+          <img src={logo} alt="Wellnesstic Logo" style={{ height: '40px', verticalAlign: 'middle' }} />
         </Link>
 
-        {/* Center: Nav links */}
         {isLoggedIn && (
           <>
             <Link to="/dashboard" className="nav-link">Dashboard</Link>
@@ -86,96 +67,31 @@ const Navbar = ({ user, onLogout }) => {
             <Link to="/mood-tracker" className="nav-link">Mood Tracker</Link>
             <Link to="/journal" className="nav-link">Journal</Link>
             <Link to="/goals" className="nav-link">Goals</Link>
+            <Link to="/wellness-logs" className="nav-link">Wellness Logs</Link> {/* NEW LINK */}
           </>
         )}
       </div>
 
-      {/* Right: Notifications, User & Logout */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          position: 'relative',
-        }}
-      >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
         {isLoggedIn && (
           <>
-            <div
-              style={{ position: 'relative', cursor: 'pointer' }}
-              onClick={() => setShowReminders(!showReminders)}
-              aria-label="Show reminders"
-              title="Reminders"
-            >
+            <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setShowReminders(!showReminders)} aria-label="Show reminders" title="Reminders">
               <span style={{ fontSize: '24px' }}>🔔</span>
-              {unreadCount > 0 && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: -4,
-                    right: -4,
-                    background: 'red',
-                    color: 'white',
-                    borderRadius: '50%',
-                    padding: '2px 6px',
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  {unreadCount}
-                </span>
-              )}
+              {unreadCount > 0 && <span style={{ position: 'absolute', top: -4, right: -4, background: 'red', color: 'white', borderRadius: '50%', padding: '2px 6px', fontSize: '12px', fontWeight: 'bold' }}>{unreadCount}</span>}
             </div>
             {showReminders && (
-              <div
-                ref={panelRef}
-                style={{
-                  position: 'absolute',
-                  right: 0,
-                  top: '64px',
-                  width: '320px',
-                  maxHeight: '400px',
-                  overflowY: 'auto',
-                  backgroundColor: 'white',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  borderRadius: '4px',
-                  zIndex: 1000,
-                }}
-              >
+              <div ref={panelRef} style={{ position: 'absolute', right: 0, top: '64px', width: '320px', maxHeight: '400px', overflowY: 'auto', backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', borderRadius: '4px', zIndex: 1000 }}>
                 <RemindersPanel reminders={reminders} onDelete={handleDeleteReminder} />
               </div>
             )}
-            <span style={{ marginRight: 8 }}>
-              Hi, {user?.name || user?.email || 'User'}
-            </span>
+            <span style={{ marginRight: 8 }}>Hi, {user?.name || user?.email || 'User'}</span>
             {user?.profileImage ? (
-              <img
-                src={user.profileImage}
-                alt="Profile"
-                style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  marginRight: 8,
-                }}
-              />
+              <img src={user.profileImage} alt="Profile" style={{ width: 32, height: 32, borderRadius: '50%', marginRight: 8 }} />
             ) : (
-              <div
-                style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  background: '#ccc',
-                  marginRight: 8,
-                }}
-              />
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#ccc', marginRight: 8 }} />
             )}
-            <button onClick={() => navigate('/profile')} className="nav-btn-profile">
-              Profile
-            </button>
-            <button onClick={handleLogout} className="nav-btn-logout">
-              Logout
-            </button>
+            <button onClick={() => navigate('/profile')} className="nav-btn-profile">Profile</button>
+            <button onClick={handleLogout} className="nav-btn-logout">Logout</button>
           </>
         )}
       </div>
@@ -184,6 +100,7 @@ const Navbar = ({ user, onLogout }) => {
 };
 
 export default Navbar;
+
 
 
 

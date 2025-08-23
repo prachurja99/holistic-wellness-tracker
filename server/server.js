@@ -32,6 +32,11 @@ app.use('/api/moods', require('./routes/moodRoutes'));
 app.use('/api/habits', require('./routes/habitRoutes'));
 app.use('/api/goals', goalRoutes);
 app.use('/api/reminders', require('./routes/reminderRoutes'));
+app.use('/api/exercises', require('./routes/exerciseRoutes'));
+app.use('/api/meditations', require('./routes/meditationRoutes'));
+app.use('/api/dashboard', require('./routes/dashboardRoutes'));
+
+
 
 
 

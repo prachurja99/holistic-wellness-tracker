@@ -1,54 +1,199 @@
-/* ===== Global Background & Typography ===== */
+/* app.css */
+
+/* ===== Theme Variables: Light (default) ===== */
+:root {
+  --background-color: #e1e6eb;
+  --text-color: #333;
+  --button-bg-color: #657786;
+  --button-hover-bg-color: #506070;
+
+  /* Dashboard specific variables */
+  --dashboard-hero-bg: linear-gradient(90deg, #fffbe6 0%, #ffd3b6 100%);
+  --dashboard-hero-shadow: 0 6px 36px rgba(255, 211, 182, 0.5);
+  --dashboard-hero-hover-shadow: 0 10px 40px rgba(255, 211, 182, 0.7);
+  --dashboard-hero-title: #b5651d;
+  --dashboard-hero-subtitle: #bb7c3a;
+
+  --dashboard-stat-bg: #fff7f3;
+  --dashboard-stat-shadow: 0 3px 12px rgba(251, 198, 160, 0.3);
+  --dashboard-stat-number: #fd9042;
+  --dashboard-stat-label: #9f6d33;
+
+  --dashboard-card-bg: #fff9f6;
+  --dashboard-card-shadow: 0 5px 24px rgba(253, 155, 94, 0.12);
+  --dashboard-card-hover-shadow: 0 12px 40px rgba(252, 154, 123, 0.35);
+  --dashboard-card-title: #ec8d47;
+
+  --dashboard-list-border: #ffeadf;
+  --dashboard-list-item-color: #a37131;
+  --dashboard-list-empty-color: #cc9f6d;
+  --dashboard-list-date-color: #b9b9b9;
+}
+
+/* ===== Dark Theme Variables ===== */
+[data-theme="dark"] {
+  --background-color: #212123;
+  --text-color: #d3b98c;
+  --button-bg-color: #5a4a6b;
+  --button-hover-bg-color: #775aa4;
+
+  --dashboard-hero-bg: linear-gradient(90deg, #212123 0%, #362346 100%);
+  --dashboard-hero-shadow: 0 6px 36px rgba(63, 33, 56, 0.7);
+  --dashboard-hero-hover-shadow: 0 10px 40px rgba(63, 33, 56, 0.9);
+  --dashboard-hero-title: #f9ab7d;
+  --dashboard-hero-subtitle: #c7b8a7;
+
+  --dashboard-stat-bg: #2d2240;
+  --dashboard-stat-shadow: 0 3px 12px rgba(150, 92, 199, 0.6);
+  --dashboard-stat-number: #ffb878;
+  --dashboard-stat-label: #dab880;
+
+  --dashboard-card-bg: #23192b;
+  --dashboard-card-shadow: 0 5px 24px rgba(63, 33, 56, 0.5);
+  --dashboard-card-hover-shadow: 0 12px 40px rgba(100, 70, 110, 0.7);
+  --dashboard-card-title: #ffb878;
+
+  --dashboard-list-border: #4d3a57;
+  --dashboard-list-item-color: #cdb78a;
+  --dashboard-list-empty-color: #a88c5b;
+  --dashboard-list-date-color: #7d6d6d;
+}
+
+/* ===== Global Styles Using Variables ===== */
 body {
   margin: 0;
   padding: 0;
-  /* Darkened the gradient slightly for more depth */
-  background: linear-gradient(135deg, #e1e6eb, #d4dae1);
+  background-color: var(--background-color);
+  color: var(--text-color);
   font-family: 'Montserrat', sans-serif;
-  color: #333;
   min-height: 100vh;
 }
 
-/* ===== Page Container ===== */
-.container {
-  max-width: 1100px;
-  margin: auto;
-  padding: 1rem;
-}
-
-/* ===== Card Styling (for sections) ===== */
-.card {
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 1rem;
-}
-
-/* ===== Buttons (global style enhancement) ===== */
 button {
   cursor: pointer;
   border: none;
   border-radius: 5px;
   padding: 0.5rem 1rem;
   font-weight: 600;
-  background-color: #657786;
-  color: #e0e6eb;
+  background-color: var(--button-bg-color);
+  color: var(--background-color);
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 button:hover {
-  background-color: #506070;
+  background-color: var(--button-hover-bg-color);
   transform: translateY(-2px);
 }
 
-/* ===== Links ===== */
-a {
-  text-decoration: none;
-  color: inherit;
+/* Use these variables in your dashboard styles (adjust your Dashboard.css accordingly) */
+.dashboard-container {
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
-a:hover {
-  color: #a1b8cc;
+.dashboard-hero {
+  background: var(--dashboard-hero-bg);
+  box-shadow: var(--dashboard-hero-shadow);
+  border-radius: 2rem;
+  padding: 3rem;
+  margin-bottom: 3rem;
+  text-align: center;
+  transition: box-shadow 0.3s ease;
 }
+
+.dashboard-hero:hover {
+  box-shadow: var(--dashboard-hero-hover-shadow);
+}
+
+.dashboard-hero-content h1 {
+  color: var(--dashboard-hero-title);
+  font-weight: 700;
+}
+
+.dashboard-hero-content p {
+  color: var(--dashboard-hero-subtitle);
+}
+
+.dashboard-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.dashboard-hero-stat {
+  background: var(--dashboard-stat-bg);
+  box-shadow: var(--dashboard-stat-shadow);
+  border-radius: 1.4rem;
+  padding: 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.dashboard-hero-stat:hover {
+  transform: translateY(-4px) scale(1.05);
+}
+
+.stat-number {
+  font-weight: 800;
+  font-size: 2.4rem;
+  color: var(--dashboard-stat-number);
+}
+
+.stat-label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--dashboard-stat-label);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.dashboard-card {
+  background: var(--dashboard-card-bg);
+  box-shadow: var(--dashboard-card-shadow);
+  border-radius: 1.6rem;
+  padding: 2.8rem 3rem 2.3rem 3rem;
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.dashboard-card:hover {
+  box-shadow: var(--dashboard-card-hover-shadow);
+  transform: translateY(-7px) scale(1.04);
+}
+
+.dashboard-card h3 {
+  color: var(--dashboard-card-title);
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid var(--dashboard-list-border);
+  padding-bottom: 0.4rem;
+  letter-spacing: 0.05em;
+}
+
+.dashboard-list-item {
+  border-bottom: 1px solid var(--dashboard-list-border);
+  color: var(--dashboard-list-item-color);
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+}
+
+.dashboard-empty {
+  font-style: italic;
+  color: var(--dashboard-list-empty-color);
+}
+
+.dashboard-list-date {
+  color: var(--dashboard-list-date-color);
+  font-size: 1rem;
+  text-align: right;
+  min-width: 90px;
+  margin-left: 20px;
+}
+
 
