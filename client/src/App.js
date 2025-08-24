@@ -94,7 +94,7 @@ function App() {
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
         <Route path="/register" element={<Register onLogin={handleLogin} />} />
         <Route element={<PrivateRoute />}>
-          <Route path="/dashboard" element={<Dashboard user={user} habits={habits} moods={moods} journals={journals} goals={goals} reminders={reminders} />} />
+          <Route path="/dashboard" element={<Dashboard user={user} habits={habits} moods={moods} journals={journals} goals={goals} reminders={reminders} token={token} />} />
           <Route path="/habit-tracker" element={<HabitTracker habits={habits} setHabits={setHabits} />} />
           <Route path="/mood-tracker" element={<MoodTracker moods={moods} setMoods={setMoods} />} />
           <Route path="/journal" element={<Journal journals={journals} setJournals={setJournals} />} />

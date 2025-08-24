@@ -6,7 +6,7 @@ const Meditation = require('../models/Meditation');
 // GET all meditations for user
 router.get('/', protect, async (req, res) => {
   try {
-    const meditations = await Meditation.find({ user: req.user.id }).sort({ date: -1 });
+    const meditations = await Meditation.find({ user: req.user._id }).sort({ date: -1 });
     res.json({ success: true, meditations });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -18,7 +18,7 @@ router.post('/', protect, async (req, res) => {
   try {
     const { date, type, duration, notes } = req.body;
     const meditation = new Meditation({
-      user: req.user.id,
+      user: req.user._id,
       date,
       type,
       duration,
@@ -34,7 +34,7 @@ router.post('/', protect, async (req, res) => {
 // DELETE meditation by id
 router.delete('/:id', protect, async (req, res) => {
   try {
-    const meditation = await Meditation.findOneAndDelete({ _id: req.params.id, user: req.user.id });
+    const meditation = await Meditation.findOneAndDelete({ _id: req.params.id, user: req.user._id });
     if (!meditation) return res.status(404).json({ success: false, message: 'Meditation not found' });
     res.json({ success: true, message: 'Meditation deleted' });
   } catch (err) {

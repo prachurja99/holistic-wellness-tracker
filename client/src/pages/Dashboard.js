@@ -3,7 +3,7 @@ import '../styles/Dashboard.css';
 import MotivationQuote from '../components/MotivationQuote';
 import axios from 'axios';
 
-function HeroSection({ user, habits, moods, journals, goals, wellnessLogs }) {
+function HeroSection({ user, habits, moods, journals, goals, wellnessStats }) {
   return (
     <div className="dashboard-hero">
       <div className="dashboard-hero-content">
@@ -31,7 +31,7 @@ function HeroSection({ user, habits, moods, journals, goals, wellnessLogs }) {
             <div className="stat-label">Goals</div>
           </div>
           <div className="dashboard-hero-stat">
-            <div className="stat-number">{wellnessLogs?.length || 0}</div>
+            <div className="stat-number">{wellnessStats?.totalWellnessLogs || 0}</div>
             <div className="stat-label">Wellness Logs</div>
           </div>
         </div>
@@ -40,46 +40,78 @@ function HeroSection({ user, habits, moods, journals, goals, wellnessLogs }) {
   );
 }
 
-export default function Dashboard({ user, habits, moods, journals, goals, reminders, token }) {
+function Dashboard({ user, token }) {
+  const [habits, setHabits] = useState([]);
+  const [moods, setMoods] = useState([]);
+  const [journals, setJournals] = useState([]);
+  const [goals, setGoals] = useState([]);
   const [wellnessLogs, setWellnessLogs] = useState([]);
+  const [wellnessStats, setWellnessStats] = useState({
+    totalWellnessLogs: 0,
+    totalExercises: 0,
+    totalMeditations: 0,
+  });
 
   useEffect(() => {
-    if (token) {
-      axios.get('/api/dashboard/summary', { headers: { Authorization: `Bearer ${token}` } })
-        .then(({ data }) => {
-          console.log('WellnessLogs response:', data);
-          if (data.success) {
-            setWellnessLogs(data.wellnessLogs);
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching wellness logs:', error);
-        });
-    }
+    const fetchDashboardData = async () => {
+      if (!token) return;
+      try {
+        const headers = { Authorization: `Bearer ${token}` };
+        const response = await axios.get('/api/dashboard/summary', { headers });
+        if (response.data.success) {
+          setHabits(response.data.recentHabits || []);
+          setMoods(response.data.recentMoods || []);
+          setJournals(response.data.recentJournals || []);
+          setGoals(response.data.recentGoals || []);
+          setWellnessLogs(response.data.wellnessLogs || []);
+          setWellnessStats({
+            totalWellnessLogs: response.data.totalWellnessLogs || 0,
+            totalExercises: response.data.totalExercises || 0,
+            totalMeditations: response.data.totalMeditations || 0,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      }
+    };
+
+    fetchDashboardData();
   }, [token]);
+
+  // Helper to identify log type for wellness logs
+  const getLogType = (log) => {
+    return log.type && ['Running', 'Yoga', 'Weights', 'Cycling', 'Swimming'].includes(log.type)
+      ? 'Exercise'
+      : 'Meditation';
+  };
 
   return (
     <div className="dashboard-container">
       <div className="dashboard-content">
-        <HeroSection 
-          user={user} 
-          habits={habits} 
-          moods={moods} 
-          journals={journals} 
-          goals={goals} 
-          wellnessLogs={wellnessLogs} 
+        <HeroSection
+          user={user}
+          habits={habits}
+          moods={moods}
+          journals={journals}
+          goals={goals}
+          wellnessStats={wellnessStats}
         />
         <MotivationQuote />
+
         <div className="dashboard-cards">
           <div className="dashboard-card">
             <h3>Recent Habits</h3>
             <ul className="dashboard-list">
-              {habits && habits.length > 0 ? (
-                habits.slice(-5).reverse().map(habit => (
+              {habits.length > 0 ? (
+                habits.slice(0, 5).map((habit) => (
                   <li key={habit._id || habit.id} className="dashboard-list-item">
                     <span>{habit.title}</span>
-                    {habit.completed && <span style={{ color: '#1bc98e', marginLeft: 8 }}>✔️</span>}
-                    <span className="dashboard-list-date">{habit.createdAt ? new Date(habit.createdAt).toLocaleDateString() : ''}</span>
+                    {habit.completed && (
+                      <span style={{ color: '#1bc98e', marginLeft: 8 }}>✔️</span>
+                    )}
+                    <span className="dashboard-list-date">
+                      {habit.createdAt ? new Date(habit.createdAt).toLocaleDateString() : ''}
+                    </span>
                   </li>
                 ))
               ) : (
@@ -91,11 +123,13 @@ export default function Dashboard({ user, habits, moods, journals, goals, remind
           <div className="dashboard-card">
             <h3>Recent Mood Logs</h3>
             <ul className="dashboard-list">
-              {moods && moods.length > 0 ? (
-                moods.slice(-5).reverse().map(mood => (
+              {moods.length > 0 ? (
+                moods.slice(0, 5).map((mood) => (
                   <li key={mood._id || mood.id} className="dashboard-list-item">
                     <span>{mood.mood}</span>
-                    <span className="dashboard-list-date">{mood.createdAt ? new Date(mood.createdAt).toLocaleDateString() : ''}</span>
+                    <span className="dashboard-list-date">
+                      {mood.createdAt ? new Date(mood.createdAt).toLocaleDateString() : ''}
+                    </span>
                   </li>
                 ))
               ) : (
@@ -107,11 +141,13 @@ export default function Dashboard({ user, habits, moods, journals, goals, remind
           <div className="dashboard-card">
             <h3>Recent Journal Entries</h3>
             <ul className="dashboard-list">
-              {journals && journals.length > 0 ? (
-                journals.slice(-5).reverse().map(journal => (
+              {journals.length > 0 ? (
+                journals.slice(0, 5).map((journal) => (
                   <li key={journal._id || journal.id} className="dashboard-list-item">
                     <span>"{journal.text?.slice(0, 40)}..."</span>
-                    <span className="dashboard-list-date">{journal.createdAt ? new Date(journal.createdAt).toLocaleDateString() : ''}</span>
+                    <span className="dashboard-list-date">
+                      {journal.createdAt ? new Date(journal.createdAt).toLocaleDateString() : ''}
+                    </span>
                   </li>
                 ))
               ) : (
@@ -123,11 +159,13 @@ export default function Dashboard({ user, habits, moods, journals, goals, remind
           <div className="dashboard-card">
             <h3>Recent Goals</h3>
             <ul className="dashboard-list">
-              {goals && goals.length > 0 ? (
-                goals.slice(-5).reverse().map(goal => (
+              {goals.length > 0 ? (
+                goals.slice(0, 5).map((goal) => (
                   <li key={goal._id || goal.id} className="dashboard-list-item">
                     <span>{goal.title}</span>
-                    <span className="dashboard-list-date">{goal.createdAt ? new Date(goal.createdAt).toLocaleDateString() : ''}</span>
+                    <span className="dashboard-list-date">
+                      {goal.createdAt ? new Date(goal.createdAt).toLocaleDateString() : ''}
+                    </span>
                   </li>
                 ))
               ) : (
@@ -137,32 +175,20 @@ export default function Dashboard({ user, habits, moods, journals, goals, remind
           </div>
 
           <div className="dashboard-card">
-            <h3>Upcoming Reminders</h3>
-            <ul className="dashboard-list">
-              {reminders && reminders.length > 0 ? (
-                reminders.slice(-5).reverse().map(rem => (
-                  <li key={rem._id || rem.id} className="dashboard-list-item">
-                    <span>{rem.title} at {rem.time}</span>
-                    {rem.date && <span> on {rem.date}</span>}
-                    {rem.days?.length > 0 && <span> on {rem.days.join(', ')}</span>}
-                  </li>
-                ))
-              ) : (
-                <li className="dashboard-list-item dashboard-empty">No upcoming reminders.</li>
-              )}
-            </ul>
-          </div>
-
-          <div className="dashboard-card">
             <h3>Recent Wellness Logs</h3>
+            <div style={{ marginBottom: '10px', fontSize: '14px', color: '#666' }}>
+              {wellnessStats.totalExercises} Exercises • {wellnessStats.totalMeditations} Meditations
+            </div>
             <ul className="dashboard-list">
               {wellnessLogs.length === 0 ? (
                 <li className="dashboard-list-item dashboard-empty">No recent wellness logs.</li>
               ) : (
-                wellnessLogs.map(log => (
+                wellnessLogs.map((log) => (
                   <li key={log._id} className="dashboard-list-item">
-                    <span>{new Date(log.date).toLocaleDateString()} - {log.type} ({log.duration} min)</span>
-                    {log.notes && <span> - {log.notes}</span>}
+                    <span>
+                      <strong>[{getLogType(log)}]</strong> {new Date(log.date).toLocaleDateString()} - {log.type} ({log.duration} min)
+                      {log.notes && ` - ${log.notes.slice(0, 25)}${log.notes.length > 25 ? '...' : ''}`}
+                    </span>
                   </li>
                 ))
               )}
@@ -173,6 +199,9 @@ export default function Dashboard({ user, habits, moods, journals, goals, remind
     </div>
   );
 }
+
+export default Dashboard;
+
 
 
 

@@ -1,11 +1,138 @@
-/* General dashboard container and layout */
+/* Base variable definitions */
+:root {
+  --background-color: #f5f9f6;
+  --text-color: #1a1a1a;
+  --hero-bg: linear-gradient(135deg, #d3e4cd 0%, #a3b18a 100%);
+  --hero-text-color: #264653;
+  --hero-stat-label-color: #556b2f;
+  --card-bg: #e8f4f8;
+  --card-title-color: #41644a;
+  --card-border-color: #c2d3c1;
+  --list-item-text-color: #2e3e2e;
+  --list-item-date-color: #71826c;
+  --scrollbar-thumb-color: #9dbba4;
+  --scrollbar-track-color: #f0f5f2;
+  --motivation-bg: linear-gradient(135deg, #f2f7fa 0%, #e8f4f8 100%);
+  --motivation-text-color: #496481;
+  --motivation-dot-color: #d0e1e8;
+  --motivation-dot-active-color: #496481;
+  --motivation-progress-bar-color: #7a9cc6;
+}
+
+/* Light Theme - default */
+[data-theme='light'] {
+  --background-color: #f5f9f6;
+  --text-color: #1a1a1a;
+  --hero-bg: linear-gradient(135deg, #d3e4cd 0%, #a3b18a 100%);
+  --hero-text-color: #264653;
+  --hero-stat-label-color: #556b2f;
+  --card-bg: #e8f4f8;
+  --card-title-color: #41644a;
+  --card-border-color: #c2d3c1;
+  --list-item-text-color: #2e3e2e;
+  --list-item-date-color: #71826c;
+  --scrollbar-thumb-color: #9dbba4;
+  --scrollbar-track-color: #f0f5f2;
+  --motivation-bg: linear-gradient(135deg, #f2f7fa 0%, #e8f4f8 100%);
+  --motivation-text-color: #496481;
+  --motivation-dot-color: #d0e1e8;
+  --motivation-dot-active-color: #496481;
+  --motivation-progress-bar-color: #7a9cc6;
+}
+
+/* Dark Theme */
+[data-theme='dark'] {
+  --background-color: #232040;
+  --text-color: #f7fafd;
+  --hero-bg: linear-gradient(135deg, #5a5b87 0%, #2f3055 100%);
+  --hero-text-color: #e0e3ff;
+  --hero-stat-label-color: #aacdbc;
+  --card-bg: #322c50;
+  --card-title-color: #b4cae7;
+  --card-border-color: #45526c;
+  --list-item-text-color: #d1d9f2;
+  --list-item-date-color: #9bb0c8;
+  --scrollbar-thumb-color: #71818d;
+  --scrollbar-track-color: #2d2e44;
+  --motivation-bg: linear-gradient(135deg, #222a42 0%, #322f57 100%);
+  --motivation-text-color: #899cca;
+  --motivation-dot-color: #4a588f;
+  --motivation-dot-active-color: #9cafff;
+  --motivation-progress-bar-color: #9d92ff;
+}
+
+/* Sepia Theme */
+[data-theme='sepia'] {
+  --background-color: #f4ece1;
+  --text-color: #5b4636;
+  --hero-bg: linear-gradient(135deg, #d8c3a5 0%, #a87c5a 100%);
+  --hero-text-color: #5b4636;
+  --hero-stat-label-color: #8c7155;
+  --card-bg: #efebe0;
+  --card-title-color: #7a624f;
+  --card-border-color: #c3b7a5;
+  --list-item-text-color: #6b584a;
+  --list-item-date-color: #a39480;
+  --scrollbar-thumb-color: #9e8563;
+  --scrollbar-track-color: #e2d9cc;
+  --motivation-bg: linear-gradient(135deg, #faf3e0 0%, #f0e4cc 100%);
+  --motivation-text-color: #7e6b54;
+  --motivation-dot-color: #cfc3ab;
+  --motivation-dot-active-color: #9c8660;
+  --motivation-progress-bar-color: #b09165;
+}
+
+/* Cool Blue Theme */
+[data-theme='coolblue'] {
+  --background-color: #e6f0f8;
+  --text-color: #1f3a5f;
+  --hero-bg: linear-gradient(135deg, #a5b8d8 0%, #738fbf 100%);
+  --hero-text-color: #1f3a5f;
+  --hero-stat-label-color: #4a6a94;
+  --card-bg: #dceeef;
+  --card-title-color: #365a8c;
+  --card-border-color: #aac3e2;
+  --list-item-text-color: #2d4373;
+  --list-item-date-color: #6682b3;
+  --scrollbar-thumb-color: #6284c7;
+  --scrollbar-track-color: #dae8f5;
+  --motivation-bg: linear-gradient(135deg, #d7e2f3 0%, #c0d0e8 100%);
+  --motivation-text-color: #365a8c;
+  --motivation-dot-color: #a9bad8;
+  --motivation-dot-active-color: #5271c7;
+  --motivation-progress-bar-color: #5271c7;
+}
+
+/* Vivid Theme */
+[data-theme='vivid'] {
+  --background-color: #fff9f0;
+  --text-color: #4a3f35;
+  --hero-bg: linear-gradient(135deg, #ffb400 0%, #ff6f3c 100%);
+  --hero-text-color: #663300;
+  --hero-stat-label-color: #b3601f;
+  --card-bg: #ffefd5;
+  --card-title-color: #8a5e25;
+  --card-border-color: #eac087;
+  --list-item-text-color: #70461b;
+  --list-item-date-color: #c89a56;
+  --scrollbar-thumb-color: #d3a759;
+  --scrollbar-track-color: #ffeedc;
+  --motivation-bg: linear-gradient(135deg, #fff4d1 0%, #fedcaa 100%);
+  --motivation-text-color: #8a5e25;
+  --motivation-dot-color: #e5cc8d;
+  --motivation-dot-active-color: #b87b1f;
+  --motivation-progress-bar-color: #b87b1f;
+}
+
+/* Now use variables in your components */
+
 .dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #1a1a1a;
-  background-color: #f5f9f6;
+  background-color: var(--background-color);
+  color: var(--text-color);
   min-height: 100vh;
 }
 
@@ -15,12 +142,11 @@
   gap: 2rem;
 }
 
-/* Hero Section */
 .dashboard-hero {
-  background: linear-gradient(135deg, #d3e4cd 0%, #a3b18a 100%);
+  background: var(--hero-bg);
   border-radius: 20px;
   padding: 2rem;
-  color: #264653;
+  color: var(--hero-text-color);
   box-shadow: 0 3px 16px rgba(0, 0, 0, 0.1);
 }
 
@@ -55,19 +181,17 @@
 .stat-label {
   font-size: 1.1rem;
   margin-top: 0.25rem;
-  color: #556b2f;
+  color: var(--hero-stat-label-color);
 }
 
-/* Cards Container */
 .dashboard-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.75rem;
 }
 
-/* Card Styling */
 .dashboard-card {
-  background-color: #e8f4f8;
+  background-color: var(--card-bg);
   padding: 1rem 1.5rem;
   border-radius: 16px;
   box-shadow: 0 5px 18px rgba(0, 0, 0, 0.07);
@@ -79,13 +203,12 @@
 .dashboard-card h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: #41644a;
+  color: var(--card-title-color);
   font-weight: 600;
-  border-bottom: 1px solid #c2d3c1;
+  border-bottom: 1px solid var(--card-border-color);
   padding-bottom: 0.3rem;
 }
 
-/* Lists */
 .dashboard-list {
   list-style: none;
   padding: 0;
@@ -100,8 +223,8 @@
   align-items: center;
   padding: 0.5rem 0;
   font-size: 1rem;
-  border-bottom: 1px solid #cfd8cd;
-  color: #2e3e2e;
+  border-bottom: 1px solid var(--card-border-color);
+  color: var(--list-item-text-color);
 }
 
 .dashboard-list-item:last-child {
@@ -110,23 +233,16 @@
 
 .dashboard-list-date {
   font-size: 0.85rem;
-  color: #71826c;
+  color: var(--list-item-date-color);
   margin-left: 12px;
   white-space: nowrap;
 }
 
-/* Empty list items */
 .dashboard-empty {
   font-style: italic;
-  color: #a1b5a5;
+  color: var(--list-item-date-color);
   padding: 1rem 0;
   text-align: center;
-}
-
-/* Wellness Logs card specific styles */
-.dashboard-card h3 {
-  /* Same styling as other cards */
-  color: #2f4f4f;
 }
 
 .dashboard-list-item span {
@@ -134,38 +250,22 @@
   overflow-wrap: break-word;
 }
 
-/* Scrollbar styling for overflow lists */
 .dashboard-list::-webkit-scrollbar {
   width: 6px;
 }
 
 .dashboard-list::-webkit-scrollbar-thumb {
-  background-color: #9dbba4;
+  background-color: var(--scrollbar-thumb-color);
   border-radius: 3px;
 }
 
 .dashboard-list::-webkit-scrollbar-track {
-  background-color: #f0f5f2;
+  background-color: var(--scrollbar-track-color);
 }
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .dashboard-hero-stats {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .dashboard-cards {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-/* MotivationQuote component styles */
 
 .motivation-quote-container {
-  background: linear-gradient(135deg, #f2f7fa 0%, #e8f4f8 100%);
-  color: #496481;
+  background: var(--motivation-bg);
+  color: var(--motivation-text-color);
   font-style: italic;
   font-weight: 500;
   font-size: 1.2rem;
@@ -214,12 +314,12 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: #d0e1e8;
+  background-color: var(--motivation-dot-color);
   transition: all 0.3s ease;
 }
 
 .dot.active {
-  background-color: #496481;
+  background-color: var(--motivation-dot-active-color);
 }
 
 .slide-progress-bar {
@@ -227,7 +327,7 @@
   bottom: 0;
   left: 0;
   height: 2px;
-  background-color: #7a9cc6;
+  background-color: var(--motivation-progress-bar-color);
   animation: slideProgress 4s linear infinite;
   width: 100%;
   transform-origin: left;
@@ -241,6 +341,18 @@
     transform: scaleX(1);
   }
 }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-hero-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 
 
