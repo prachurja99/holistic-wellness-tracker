@@ -3,8 +3,7 @@ import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-
 
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import MoodTracker from './pages/MoodTracker';
+import Dashboard from './pages/Dashboard';import MoodTracker from './pages/MoodTracker';
 import HabitTracker from './pages/HabitTracker';
 import Journal from './pages/Journal';
 import GoalTracker from './pages/GoalTracker';
