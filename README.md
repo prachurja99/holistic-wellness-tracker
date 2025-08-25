@@ -52,19 +52,6 @@ App runs at [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 🖼 Screenshots
-
-**Light Theme:**
-
-![Dashboard Light Theme]("C:\Users\LENOVO\OneDrive\Pictures\Screenshots\Screenshot 2025-08-25 131251.png")
-
-**Dark Theme:**
-
-![Dashboard Dark Theme]("C:\Users\LENOVO\OneDrive\Pictures\Screenshots\Screenshot 2025-08-25 131334.png")
-
-
-
----
 
 ## 🤝 Contributing
 
