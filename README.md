@@ -56,13 +56,13 @@ App runs at [http://localhost:3000](http://localhost:3000)
 
 **Light Theme:**
 
-![Dashboard Light Theme](attached_image:1)
+![Dashboard Light Theme]("C:\Users\LENOVO\OneDrive\Pictures\Screenshots\Screenshot 2025-08-25 131251.png")
 
 **Dark Theme:**
 
-![Dashboard Dark Theme](attached_image:2)
+![Dashboard Dark Theme]("C:\Users\LENOVO\OneDrive\Pictures\Screenshots\Screenshot 2025-08-25 131334.png")
 
-*Replace image links above or upload your actual screenshots as needed.*
+
 
 ---
 
