@@ -1,7 +1,7 @@
-// client/src/api/moods.js
 import axios from 'axios';
 
-const API_URL = '/api/moods';
+const BASE_URL = process.env.REACT_APP_API_URL || '';
+const API_URL = `${BASE_URL}/api/moods`;
 
 export const fetchMoods = async (token) => {
   try {

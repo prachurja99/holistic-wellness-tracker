@@ -1,8 +1,8 @@
-// src/api/goals.js
+const BASE_URL = process.env.REACT_APP_API_URL || '';
 
 export const fetchGoals = async (token, goalType, date) => {
   try {
-    let url = '/api/goals';
+    let url = `${BASE_URL}/api/goals`;
     if (goalType && date) {
       url += `?goalType=${goalType}&date=${date}`;
     } else if (goalType) {
@@ -17,7 +17,7 @@ export const fetchGoals = async (token, goalType, date) => {
 
 export const fetchFinishedGoals = async (token, goalType, date) => {
   try {
-    let url = '/api/goals/finished';
+    let url = `${BASE_URL}/api/goals/finished`;
     if (goalType && date) {
       url += `?goalType=${goalType}&date=${date}`;
     } else if (goalType) {
@@ -32,7 +32,7 @@ export const fetchFinishedGoals = async (token, goalType, date) => {
 
 export const create = async (data, token) => {
   try {
-    const res = await fetch('/api/goals', {
+    const res = await fetch(`${BASE_URL}/api/goals`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify(data),
@@ -45,7 +45,7 @@ export const create = async (data, token) => {
 
 export const update = async (id, data, token) => {
   try {
-    const res = await fetch(`/api/goals/${id}`, {
+    const res = await fetch(`${BASE_URL}/api/goals/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify(data),
@@ -58,7 +58,7 @@ export const update = async (id, data, token) => {
 
 export const remove = async (id, token) => {
   try {
-    const res = await fetch(`/api/goals/${id}`, {
+    const res = await fetch(`${BASE_URL}/api/goals/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -70,7 +70,7 @@ export const remove = async (id, token) => {
 
 export const markFinished = async (goalId, date, goalType, token) => {
   try {
-    const res = await fetch('/api/goals/finish', {
+    const res = await fetch(`${BASE_URL}/api/goals/finish`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ goalId, date, goalType }),
@@ -83,7 +83,7 @@ export const markFinished = async (goalId, date, goalType, token) => {
 
 export const unmarkFinished = async (goalId, date, goalType, token) => {
   try {
-    const res = await fetch('/api/goals/unfinish', {
+    const res = await fetch(`${BASE_URL}/api/goals/unfinish`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ goalId, date, goalType }),
@@ -96,7 +96,7 @@ export const unmarkFinished = async (goalId, date, goalType, token) => {
 
 export const fetchGoalStats = async (goalType, date, token) => {
   try {
-    const res = await fetch(`/api/goals/stats?goalType=${goalType}&date=${date}`, {
+    const res = await fetch(`${BASE_URL}/api/goals/stats?goalType=${goalType}&date=${date}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return await res.json();
@@ -104,9 +104,6 @@ export const fetchGoalStats = async (goalType, date, token) => {
     return { success: false, message: err.message };
   }
 };
-
-
-// src/api/goals.js (add this function)
 
 
 

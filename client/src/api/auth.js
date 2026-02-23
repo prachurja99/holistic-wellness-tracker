@@ -1,14 +1,14 @@
-// src/api/auth.js
 import axios from 'axios';
 
+const BASE_URL = process.env.REACT_APP_API_URL || '';
+
 const api = axios.create({
-  baseURL: '/api/auth' // Dev proxy will route to backend
+  baseURL: `${BASE_URL}/api/auth`
 });
 
 const authHeaders = (token) =>
   token ? { Authorization: `Bearer ${token}` } : {};
 
-// REGISTER
 export const registerUser = async (userData) => {
   try {
     const res = await api.post('/register', userData);
@@ -19,7 +19,6 @@ export const registerUser = async (userData) => {
   }
 };
 
-// LOGIN
 export const loginUser = async (userData) => {
   try {
     const res = await api.post('/login', userData);
@@ -30,7 +29,6 @@ export const loginUser = async (userData) => {
   }
 };
 
-// GET PROFILE
 export const getUserProfile = async (token) => {
   try {
     const res = await api.get('/profile', { headers: authHeaders(token) });
@@ -41,7 +39,6 @@ export const getUserProfile = async (token) => {
   }
 };
 
-// UPDATE PROFILE
 export const updateUserProfile = async (token, updatedData) => {
   try {
     const res = await api.put('/profile', updatedData, { headers: authHeaders(token) });

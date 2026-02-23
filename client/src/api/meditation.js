@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = '/api/meditations';
+const BASE_URL = process.env.REACT_APP_API_URL || '';
+const API_URL = `${BASE_URL}/api/meditations`;
 
 export const getMeditations = (token) => {
   return axios.get(API_URL, { headers: { Authorization: `Bearer ${token}` } });

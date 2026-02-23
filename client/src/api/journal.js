@@ -1,7 +1,8 @@
-// client/src/api/journal.js
+const BASE_URL = process.env.REACT_APP_API_URL || '';
+
 export const fetchJournals = async (token) => {
   try {
-    const res = await fetch('/api/journal', {
+    const res = await fetch(`${BASE_URL}/api/journal`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     return await res.json();
@@ -13,7 +14,7 @@ export const fetchJournals = async (token) => {
 
 export const addJournal = async (entry, token) => {
   try {
-    const res = await fetch('/api/journal', {
+    const res = await fetch(`${BASE_URL}/api/journal`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,7 +31,7 @@ export const addJournal = async (entry, token) => {
 
 export const updateJournal = async (id, updatedData, token) => {
   try {
-    const res = await fetch(`/api/journal/${id}`, {
+    const res = await fetch(`${BASE_URL}/api/journal/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -47,7 +48,7 @@ export const updateJournal = async (id, updatedData, token) => {
 
 export const deleteJournal = async (id, token) => {
   try {
-    const res = await fetch(`/api/journal/${id}`, {
+    const res = await fetch(`${BASE_URL}/api/journal/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` }
     });
